@@ -1,19 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { dismissCookieBannerIfVisible } from "./helpers/session";
+import { dismissCookieBannerIfVisible, installCookieConsent } from "./helpers/session";
 
 test.describe("Checkout funnel entry", () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-      localStorage.setItem(
-        "mobillab-cookie-consent",
-        JSON.stringify({
-          version: "2026-07-01",
-          decidedAt: new Date().toISOString(),
-          preferences: { functional: false, analytics: false, marketing: false },
-          source: "banner-reject-all",
-        }),
-      );
-    });
+    await installCookieConsent(page);
   });
 
   test("home page loads and exposes search", async ({ page }) => {

@@ -2,6 +2,20 @@ import type { APIRequestContext, Page } from "@playwright/test";
 
 const CONSENT_POLICY_VERSION = "2026-07-01";
 
+export async function installCookieConsent(page: Page) {
+  await page.addInitScript((consentVersion: string) => {
+    localStorage.setItem(
+      "mobillab-cookie-consent",
+      JSON.stringify({
+        version: consentVersion,
+        decidedAt: new Date().toISOString(),
+        preferences: { functional: false, analytics: false, marketing: false },
+        source: "banner-reject-all",
+      }),
+    );
+  }, CONSENT_POLICY_VERSION);
+}
+
 export const TEST_PATIENT = {
   id: "p-e2e-test",
   fullName: "Jan Kowalski",
@@ -40,25 +54,16 @@ export const TEST_SESSION = {
 };
 
 export async function seedBrowserSession(page: Page) {
+  await installCookieConsent(page);
   await page.addInitScript(
-    ({ patient, order, consentVersion }) => {
+    ({ patient, order }) => {
       localStorage.setItem("mobillab-patients", JSON.stringify([patient]));
       localStorage.setItem("mobillab-last-patient", patient.id);
-      localStorage.setItem(
-        "mobillab-cookie-consent",
-        JSON.stringify({
-          version: consentVersion,
-          decidedAt: new Date().toISOString(),
-          preferences: { functional: false, analytics: false, marketing: false },
-          source: "banner-reject-all",
-        }),
-      );
       sessionStorage.setItem("labflow-order", JSON.stringify(order));
     },
     {
       patient: TEST_PATIENT,
       order: TEST_ORDER,
-      consentVersion: CONSENT_POLICY_VERSION,
     },
   );
 }
