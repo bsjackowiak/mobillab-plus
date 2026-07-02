@@ -1,8 +1,12 @@
 import { fetchCompanyByNip } from "@/lib/nip-lookup";
 import { isValidNip, normalizeNip } from "@/lib/invoice";
+import { enforceRateLimit } from "@/lib/server/enforce-rate-limit";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
+  const limited = await enforceRateLimit(request, "nip-lookup");
+  if (limited) return limited;
+
   const nip = normalizeNip(new URL(request.url).searchParams.get("nip") ?? "");
 
   if (!isValidNip(nip)) {

@@ -22,7 +22,7 @@ function sanitizePayload(body: ContactFormInput) {
 }
 
 export async function POST(request: Request) {
-  const rate = checkContactRateLimit(clientKeyFromRequest(request));
+  const rate = await checkContactRateLimit(clientKeyFromRequest(request));
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Zbyt wiele wiadomości. Spróbuj ponownie za chwilę." },
