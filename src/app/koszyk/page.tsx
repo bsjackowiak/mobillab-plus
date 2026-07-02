@@ -12,8 +12,8 @@ import {
   emptyStateSubClassName,
   emptyStateTitleClassName,
 } from "@/components/ui/empty-state-layout";
-import { Suspense, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MobileShell } from "@/components/layout/MobileShell";
 import { ApiErrorState } from "@/components/ui/ApiErrorState";
 import { CartLineItem } from "@/components/ui/CartLineItem";
@@ -64,8 +64,7 @@ import type { CartItem } from "@/lib/types";
 
 function KoszykPageContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const focusAssign = searchParams.get("focus") === "assign";
+  const [focusAssign, setFocusAssign] = useState(false);
   const patients = usePatients();
 
   const [ready, setReady] = useState(false);
@@ -132,6 +131,11 @@ function KoszykPageContent() {
     void loadSuggestions(cartItems);
     void loadCatalogDetails(cartItems);
   }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setFocusAssign(params.get("focus") === "assign");
+  }, []);
 
   useEffect(() => {
     refresh();
@@ -345,15 +349,5 @@ function KoszykPageContent() {
 }
 
 export default function KoszykPage() {
-  return (
-    <Suspense
-      fallback={
-        <MobileShell showBack backFallback="/" noCta>
-          <p className={heroSubClassName}>Ładowanie…</p>
-        </MobileShell>
-      }
-    >
-      <KoszykPageContent />
-    </Suspense>
-  );
+  return <KoszykPageContent />;
 }

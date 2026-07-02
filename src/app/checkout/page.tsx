@@ -31,6 +31,7 @@ import { orderHasItem } from "@/lib/order-helpers";
 import type { CheckoutClientConfig } from "@/lib/payment-config";
 import { generateOrderNumber, getOrder, saveOrder } from "@/lib/order-storage";
 import { getPatients, getRequiredPatientCount, hasRequiredPatients } from "@/lib/patient-storage";
+import { ensureSessionHydrated } from "@/lib/session-sync";
 import type {
   CartItem,
   InvoiceCompanyData,
@@ -118,41 +119,52 @@ export default function CheckoutPage() {
   }, []);
 
   useEffect(() => {
-    const current = getOrder();
-    if (!orderHasItem(current)) {
-      router.replace("/");
-      return;
-    }
+    let cancelled = false;
 
-    if (!hasRequiredPatients(current)) {
-      router.replace("/dane");
-      return;
-    }
+    void (async () => {
+      await ensureSessionHydrated();
+      if (cancelled) return;
 
-    if (!orderHasCollection(current)) {
-      router.replace("/pobranie");
-      return;
-    }
+      const current = getOrder();
+      if (!orderHasItem(current)) {
+        router.replace("/");
+        return;
+      }
 
-    if (!cartAssignmentsComplete(current)) {
-      router.replace("/koszyk?focus=assign");
-      return;
-    }
+      if (!hasRequiredPatients(current)) {
+        router.replace("/dane");
+        return;
+      }
 
-    const activePatients = getPatients().slice(0, getRequiredPatientCount(current));
-    const cartItems = getCartItems();
-    const contact = activePatients[0];
+      if (!orderHasCollection(current)) {
+        router.replace("/pobranie");
+        return;
+      }
 
-    setItems(cartItems);
-    setOrder(current);
-    setGrandTotal(getOrderGrandTotal(current!));
-    setCollectionFee(getCollectionFee(current!.collectionType));
-    setPatients(activePatients);
-    setGrouped(groupItemsByPatient(cartItems, activePatients));
-    setInvoiceType(current?.invoiceType ?? "none");
-    setPersonalInvoice(current?.invoicePersonal ?? emptyPersonalInvoice(contact));
-    setCompanyInvoice(current?.invoiceCompany ?? emptyCompanyInvoice());
-    setReady(true);
+      if (!cartAssignmentsComplete(current)) {
+        router.replace("/koszyk?focus=assign");
+        return;
+      }
+
+      const activePatients = getPatients().slice(0, getRequiredPatientCount(current));
+      const cartItems = getCartItems();
+      const contact = activePatients[0];
+
+      setItems(cartItems);
+      setOrder(current);
+      setGrandTotal(getOrderGrandTotal(current!));
+      setCollectionFee(getCollectionFee(current!.collectionType));
+      setPatients(activePatients);
+      setGrouped(groupItemsByPatient(cartItems, activePatients));
+      setInvoiceType(current?.invoiceType ?? "none");
+      setPersonalInvoice(current?.invoicePersonal ?? emptyPersonalInvoice(contact));
+      setCompanyInvoice(current?.invoiceCompany ?? emptyCompanyInvoice());
+      setReady(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   if (!ready || !order || patients.length === 0) {
