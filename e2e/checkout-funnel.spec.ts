@@ -11,7 +11,7 @@ test.describe("Checkout funnel (demo)", () => {
     await dismissCookieBannerIfVisible(page);
     await expect(page.getByRole("heading", { name: "Płatność" })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText("Morfologia krwi")).toBeVisible();
-    await expect(page.getByText("Jan Kowalski · 25 zł")).toBeVisible();
+    await expect(page.getByText(/Jan Kowalski · 21[,.]85 zł/)).toBeVisible();
   });
 
   test("completes demo order through payment", async ({ page }) => {

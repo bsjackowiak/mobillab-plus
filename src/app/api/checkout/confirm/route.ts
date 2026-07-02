@@ -7,17 +7,25 @@ import {
 } from "@/lib/payment-config";
 import type { CompletedOrder } from "@/lib/session-types";
 import {
+  cacheCheckoutResponse,
+  getCachedCheckoutResponse,
+  readIdempotencyKey,
+} from "@/lib/server/checkout-idempotency";
+import {
   computeServerGrandTotal,
   generateServerOrderNumber,
   validateCheckoutConfirm,
   type ConfirmCheckoutBody,
 } from "@/lib/server/checkout-validate";
+import { clientKeyFromRequest } from "@/lib/server/rate-limit";
+import { enforceRateLimit } from "@/lib/server/enforce-rate-limit";
 import {
   createStoredOrder,
   markOrderEmailSent,
   updateOrderPaymentStatus,
 } from "@/lib/server/order-registry";
 import { sendOrderConfirmationEmail } from "@/lib/server/order-email";
+import { repriceOrder } from "@/lib/server/order-pricing";
 import { createPaymentSession } from "@/lib/server/payment-providers";
 import {
   getOrCreateSessionId,
@@ -45,6 +53,16 @@ export async function POST(request: Request) {
   const { sessionId, isNew } = await getOrCreateSessionId();
   const paymentMode = getPaymentMode();
 
+  const limited = await enforceRateLimit(
+    request,
+    "checkout-confirm",
+    "Zbyt wiele prób potwierdzenia zamówienia. Spróbuj ponownie później.",
+    `${sessionId}:${clientKeyFromRequest(request)}`,
+  );
+  if (limited) {
+    return withSessionCookie(limited, sessionId, isNew);
+  }
+
   if (paymentMode === "live" && !isLivePaymentConfigured()) {
     return withSessionCookie(
       NextResponse.json(
@@ -70,8 +88,29 @@ export async function POST(request: Request) {
     );
   }
 
+  const idempotencyKey = readIdempotencyKey(request, body.idempotencyKey);
+  if (idempotencyKey) {
+    const cached = await getCachedCheckoutResponse(sessionId, idempotencyKey);
+    if (cached) {
+      return withSessionCookie(
+        NextResponse.json(cached.body, { status: cached.status }),
+        sessionId,
+        isNew,
+      );
+    }
+  }
+
   const session = await readSession(sessionId);
-  const order = session.order;
+  const priced = repriceOrder(session.order);
+  if (!priced.ok) {
+    return withSessionCookie(
+      NextResponse.json({ error: "Brak ceny zamówienia" }, { status: 400 }),
+      sessionId,
+      isNew,
+    );
+  }
+
+  const order = priced.order;
 
   const validationError = validateCheckoutConfirm(order, session.patients, body, {
     paymentMode,
@@ -159,13 +198,13 @@ export async function POST(request: Request) {
 
   if (paymentMode === "live") {
     try {
-      const session = await createPaymentSession(stored, getCustomerIp(request));
+      const paymentSession = await createPaymentSession(stored, getCustomerIp(request));
       await updateOrderPaymentStatus(orderNumber, "pending", {
-        paymentExternalId: session.externalId,
-        paymentProvider: session.provider,
-        paymentRedirectUrl: session.redirectUri,
+        paymentExternalId: paymentSession.externalId,
+        paymentProvider: paymentSession.provider,
+        paymentRedirectUrl: paymentSession.redirectUri,
       });
-      responseBody.redirectUrl = session.redirectUri;
+      responseBody.redirectUrl = paymentSession.redirectUri;
       responseBody.paymentPending = true;
     } catch (error) {
       const message =
@@ -176,6 +215,10 @@ export async function POST(request: Request) {
         isNew,
       );
     }
+  }
+
+  if (idempotencyKey) {
+    await cacheCheckoutResponse(sessionId, idempotencyKey, responseBody);
   }
 
   return withSessionCookie(NextResponse.json(responseBody), sessionId, isNew);

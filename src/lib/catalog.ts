@@ -54,6 +54,7 @@ const CATALOG_PATH = path.join(process.cwd(), "data", "cennik_diag_pelny.json");
 
 let catalogCache: CatalogFile | null = null;
 let slugMap: Map<string, CatalogItem> | null = null;
+let idMap: Map<number, CatalogItem> | null = null;
 let searchIndex: IndexEntry[] | null = null;
 
 function normalize(text: string): string {
@@ -84,6 +85,13 @@ function getSlugMap(): Map<string, CatalogItem> {
   return slugMap;
 }
 
+function getIdMap(): Map<number, CatalogItem> {
+  if (idMap) return idMap;
+  const catalog = loadCatalog();
+  idMap = new Map(catalog.items.map((item) => [item.id, item]));
+  return idMap;
+}
+
 function getSearchIndex(): IndexEntry[] {
   if (searchIndex) return searchIndex;
 
@@ -112,6 +120,10 @@ export function getCatalogPrice(item: Pick<CatalogItem, "cena_poznan_pln" | "cen
 
 export function getCatalogItemBySlug(slug: string): CatalogItem | undefined {
   return getSlugMap().get(slug);
+}
+
+export function getCatalogItemById(id: number): CatalogItem | undefined {
+  return getIdMap().get(id);
 }
 
 function toCatalogResult(entry: IndexEntry): CatalogSearchResult {

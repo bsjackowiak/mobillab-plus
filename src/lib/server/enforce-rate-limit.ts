@@ -9,8 +9,9 @@ export async function enforceRateLimit(
   request: Request,
   scope: RateLimitScope,
   message = "Zbyt wiele żądań. Spróbuj ponownie za chwilę.",
+  clientKey?: string,
 ): Promise<NextResponse | null> {
-  const rate = await checkRateLimit(scope, clientKeyFromRequest(request));
+  const rate = await checkRateLimit(scope, clientKey ?? clientKeyFromRequest(request));
   if (rate.allowed) return null;
 
   return NextResponse.json(

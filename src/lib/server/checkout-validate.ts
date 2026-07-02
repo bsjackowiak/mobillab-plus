@@ -65,6 +65,7 @@ export type ConfirmCheckoutBody = {
   invoiceCompany?: InvoiceCompanyData;
   location: string;
   demoAcknowledged?: boolean;
+  idempotencyKey?: string;
 };
 
 export function validateCheckoutConfirm(

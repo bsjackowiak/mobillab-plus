@@ -28,12 +28,12 @@ export const TEST_PATIENT = {
 export const TEST_ORDER = {
   items: [
     {
-      key: "p-e2e-test:catalog:morfologia",
-      productKey: "catalog:morfologia",
+      key: "p-e2e-test:catalog:morfologia-krwi-pelna",
+      productKey: "catalog:morfologia-krwi-pelna",
       kind: "catalog",
-      catalogSlug: "morfologia",
+      catalogSlug: "morfologia-krwi-pelna",
       name: "Morfologia krwi",
-      price: 25,
+      price: 21.85,
       patientId: "p-e2e-test",
       typ: "badanie",
     },

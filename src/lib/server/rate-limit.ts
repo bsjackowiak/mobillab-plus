@@ -1,6 +1,12 @@
 import { isUpstashConfigured, upstashCommand } from "@/lib/server/upstash-rest";
 
-export type RateLimitScope = "contact" | "session-read" | "session-write" | "search" | "nip-lookup";
+export type RateLimitScope =
+  | "contact"
+  | "session-read"
+  | "session-write"
+  | "search"
+  | "nip-lookup"
+  | "checkout-confirm";
 
 export type RateLimitConfig = {
   max: number;
@@ -13,6 +19,7 @@ export const RATE_LIMITS: Record<RateLimitScope, RateLimitConfig> = {
   "session-write": { max: 60, windowMs: 60 * 1000 },
   search: { max: 120, windowMs: 60 * 1000 },
   "nip-lookup": { max: 30, windowMs: 60 * 60 * 1000 },
+  "checkout-confirm": { max: 5, windowMs: 60 * 60 * 1000 },
 };
 
 export type RateLimitResult = {

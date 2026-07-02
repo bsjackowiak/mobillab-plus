@@ -41,6 +41,84 @@ describe("parseSessionPutPayload", () => {
     expect(result.ok).toBe(false);
   });
 
+  it("rejects invalid PESEL", () => {
+    const result = parseSessionPutPayload({
+      patients: [
+        {
+          id: "p1",
+          fullName: "Jan Kowalski",
+          email: "jan@example.com",
+          pesel: "12345678901",
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+  });
+
+  it("accepts child identity with birth date and empty PESEL", () => {
+    const result = parseSessionPutPayload({
+      patients: [
+        {
+          id: "p-child",
+          fullName: "Ala Nowak",
+          email: "rodzic@example.com",
+          pesel: "",
+          birthDate: "2020-05-10",
+          relation: "child",
+          ageCategory: "child_4_12",
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("reprices cart items from catalog on session put", () => {
+    const result = parseSessionPutPayload({
+      order: {
+        items: [
+          {
+            key: "k1",
+            productKey: "catalog:morfologia-krwi-pelna",
+            kind: "catalog",
+            catalogSlug: "morfologia-krwi-pelna",
+            name: "Morfologia krwi",
+            price: 0.01,
+            typ: "badanie",
+          },
+        ],
+      },
+      patients: [],
+      lastPatientId: null,
+      completedOrders: [],
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.order.items[0]!.price).toBeGreaterThan(1);
+    }
+  });
+
+  it("rejects session put with unknown catalog item", () => {
+    const result = parseSessionPutPayload({
+      order: {
+        items: [
+          {
+            key: "k1",
+            productKey: "catalog:fake",
+            kind: "catalog",
+            catalogSlug: "fake-slug",
+            name: "Fake",
+            price: 10,
+          },
+        ],
+      },
+    });
+
+    expect(result.ok).toBe(false);
+  });
+
   it("rejects oversized cart", () => {
     const items = Array.from({ length: 51 }, (_, index) => ({
       key: `k-${index}`,

@@ -1,5 +1,8 @@
 import { z } from "zod";
+import { isValidBirthDate } from "@/lib/patient-identity";
+import { isValidPesel } from "@/lib/pesel";
 import { normalizeSession } from "@/lib/server/session-normalize";
+import { repriceOrder } from "@/lib/server/order-pricing";
 import type { SessionData } from "@/lib/session-types";
 
 export const SESSION_PUT_MAX_BYTES = 256_000;
@@ -54,16 +57,29 @@ const orderSchema = z.object({
     .optional(),
 });
 
-const patientSchema = z.object({
-  id: z.string().trim().max(80),
-  fullName: z.string().trim().max(200),
-  email: z.string().trim().email().max(254),
-  phone: z.string().trim().max(24).optional(),
-  pesel: z.string().trim().max(11),
-  birthDate: z.string().trim().max(10).optional(),
-  relation: z.enum(["self", "child", "other"]).optional(),
-  ageCategory: z.enum(["adult", "child_u4", "child_4_12"]).optional(),
-});
+const patientSchema = z
+  .object({
+    id: z.string().trim().max(80),
+    fullName: z.string().trim().max(200),
+    email: z.string().trim().email().max(254),
+    phone: z.string().trim().max(24).optional(),
+    pesel: z.string().trim().max(11),
+    birthDate: z.string().trim().max(10).optional(),
+    relation: z.enum(["self", "child", "other"]).optional(),
+    ageCategory: z.enum(["adult", "child_u4", "child_4_12"]).optional(),
+  })
+  .superRefine((patient, ctx) => {
+    const pesel = patient.pesel.trim();
+    if (pesel.length > 0) {
+      if (!isValidPesel(pesel)) {
+        ctx.addIssue({ code: "custom", message: "Invalid PESEL" });
+      }
+      return;
+    }
+    if (!patient.birthDate || !isValidBirthDate(patient.birthDate)) {
+      ctx.addIssue({ code: "custom", message: "Invalid patient identity" });
+    }
+  });
 
 const completedOrderSchema = orderSchema.extend({
   completedAt: z.string().trim().max(40),
@@ -94,6 +110,14 @@ export function parseSessionPutPayload(body: unknown): SessionPutParseResult {
     completedOrders: parsed.data.completedOrders ?? [],
     updatedAt: new Date().toISOString(),
   });
+
+  if (data.order.items.length > 0) {
+    const priced = repriceOrder(data.order);
+    if (!priced.ok) {
+      return { ok: false, error: "Invalid session payload" };
+    }
+    data.order = priced.order;
+  }
 
   return { ok: true, data };
 }
