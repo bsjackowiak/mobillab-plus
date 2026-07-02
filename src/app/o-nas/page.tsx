@@ -42,6 +42,14 @@ import {
   SUPPORT_PHONE_TEL,
   SUPPORT_WHATSAPP_URL,
 } from "@/lib/contact";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "O nas",
+  description:
+    "Poznaj Mobillab+ — prywatne badania laboratoryjne bez skierowania, pobranie w domu lub w punkcie, wyniki online.",
+  path: "/o-nas",
+});
 
 const FOR_WHO = [
   "rodzice z dziećmi",

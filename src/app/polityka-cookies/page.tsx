@@ -9,6 +9,14 @@ import {
   COOKIE_REGISTRY,
   type CookieCategory,
 } from "@/lib/cookie-consent";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Polityka cookies",
+  description:
+    "Polityka plików cookies Mobillab+ — jakie cookies używamy i jak zarządzać zgodami.",
+  path: "/polityka-cookies",
+});
 
 const CATEGORY_ORDER: CookieCategory[] = [
   "necessary",

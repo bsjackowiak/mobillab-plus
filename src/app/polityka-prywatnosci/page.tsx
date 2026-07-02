@@ -7,6 +7,13 @@ import {
   COMPANY,
 } from "@/lib/company";
 import { CONSENT_POLICY_VERSION } from "@/lib/cookie-consent";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Polityka prywatności",
+  description: `Polityka prywatności Mobillab+ (wersja ${CONSENT_POLICY_VERSION}) — informacja RODO i przetwarzanie danych.`,
+  path: "/polityka-prywatnosci",
+});
 
 export default function PolitykaPrywatnosciPage() {
   return (

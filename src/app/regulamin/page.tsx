@@ -1,4 +1,11 @@
 import { SitePage } from "@/components/layout/SitePage";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Regulamin",
+  description: "Regulamin korzystania z usługi Mobillab+ — zamówienia, płatności, pobrania i wyniki badań.",
+  path: "/regulamin",
+});
 
 export default function RegulaminPage() {
   return (

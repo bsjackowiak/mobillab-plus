@@ -23,6 +23,14 @@ import Link from "next/link";
 import { MobileShell } from "@/components/layout/MobileShell";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { COMPANY, companyAddressLine } from "@/lib/company";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Kontakt",
+  description:
+    "Skontaktuj się z Mobillab+ — pytania o badania, zamówienia i pobrania. Formularz, e-mail i telefon.",
+  path: "/kontakt",
+});
 import {
   SUPPORT_PHONE_DISPLAY,
   SUPPORT_PHONE_TEL,
