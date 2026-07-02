@@ -11,6 +11,7 @@ import {
   fieldErrorTextClassName,
   fieldGroupClassName,
   fieldInputClassName,
+  formErrorAlertProps,
 } from "@/components/ui/form-field-layout";
 import { patientIdentityModeToggleClassName } from "@/components/ui/patient-form-layout";
 import styles from "./PatientForm.module.css";
@@ -168,8 +169,16 @@ export function PatientEditSheet({ open, patient, onSubmit, onClose }: PatientEd
 
         {error &&
           !error.includes("PESEL") &&
-          !error.includes("urodzenia") && <span className={fieldErrorTextClassName}>{error}</span>}
-        {error.includes("urodzenia") && <span className={fieldErrorTextClassName}>{error}</span>}
+          !error.includes("urodzenia") && (
+            <span className={fieldErrorTextClassName} {...formErrorAlertProps}>
+              {error}
+            </span>
+          )}
+        {error.includes("urodzenia") && (
+          <span className={fieldErrorTextClassName} {...formErrorAlertProps}>
+            {error}
+          </span>
+        )}
       </div>
     </AppFullscreen>
   );

@@ -7,6 +7,7 @@ import {
   isValidPesel,
   parsePeselBirthDate,
 } from "@/lib/pesel";
+import { formErrorAlertProps } from "@/components/ui/form-field-layout";
 import styles from "./PeselInput.module.css";
 
 type PeselInputProps = {
@@ -135,7 +136,7 @@ export function PeselInput({ id, value, onChange, error, hint }: PeselInputProps
       </div>
 
       {error && (
-        <span className={styles.errorText} id={`${inputId}-error`}>
+        <span className={styles.errorText} id={`${inputId}-error`} {...formErrorAlertProps}>
           {error}
         </span>
       )}

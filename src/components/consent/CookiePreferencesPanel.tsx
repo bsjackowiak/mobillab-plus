@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   COOKIE_CATEGORY_DESCRIPTIONS,
   COOKIE_CATEGORY_LABELS,
@@ -11,6 +11,8 @@ import {
   type OptionalCookieCategory,
 } from "@/lib/cookie-consent";
 import { useCookieConsent } from "@/lib/cookie-consent-context";
+import { useFocusTrap } from "@/lib/use-focus-trap";
+import { useInertHostSiblings } from "@/lib/use-inert";
 
 const OPTIONAL_CATEGORIES: OptionalCookieCategory[] = [
   "functional",
@@ -65,7 +67,12 @@ export function CookiePreferencesPanel() {
     rejectAll,
     acceptAll,
   } = useCookieConsent();
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const [portalHost, setPortalHost] = useState<HTMLElement | null>(null);
+
+  useFocusTrap(panelRef, showPreferences);
+  useInertHostSiblings(portalHost, overlayRef, showPreferences);
 
   useEffect(() => {
     setPortalHost(document.getElementById("app-phone"));
@@ -83,13 +90,14 @@ export function CookiePreferencesPanel() {
   if (!showPreferences || !portalHost) return null;
 
   return createPortal(
-    <div className="cookie-pref-root" role="presentation">
+    <div ref={overlayRef} className="cookie-pref-root" role="presentation">
       <div
         className="cookie-pref-backdrop"
         aria-hidden
         onClick={closePreferences}
       />
       <div
+        ref={panelRef}
         className="cookie-pref-panel"
         role="dialog"
         aria-modal="true"

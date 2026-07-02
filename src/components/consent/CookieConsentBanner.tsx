@@ -1,16 +1,43 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { useCookieConsent } from "@/lib/cookie-consent-context";
+import { useFocusTrap } from "@/lib/use-focus-trap";
+import { useInertHostSiblings } from "@/lib/use-inert";
+import { APP_PHONE_ID } from "@/components/layout/shell-integration";
 
 export function CookieConsentBanner() {
+  const panelRef = useRef<HTMLDivElement>(null);
   const { ready, showBanner, acceptAll, rejectAll, openPreferences, dismissBannerAsReject } =
     useCookieConsent();
+
+  useFocusTrap(panelRef, ready && showBanner);
+
+  useEffect(() => {
+    if (!ready || !showBanner) return;
+    const host = document.getElementById(APP_PHONE_ID);
+    if (!host) return;
+    const inerted: HTMLElement[] = [];
+    const exempt = panelRef.current;
+    for (const child of host.children) {
+      if (child instanceof HTMLElement && child !== exempt) {
+        child.inert = true;
+        inerted.push(child);
+      }
+    }
+    return () => {
+      for (const element of inerted) {
+        element.inert = false;
+      }
+    };
+  }, [ready, showBanner]);
 
   if (!ready || !showBanner) return null;
 
   return (
     <div
+      ref={panelRef}
       className="cookie-consent-banner"
       role="dialog"
       aria-modal="true"

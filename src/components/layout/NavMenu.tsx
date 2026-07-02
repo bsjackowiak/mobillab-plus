@@ -7,15 +7,22 @@ import { Logo } from "@/components/brand/Logo";
 import { headerIconBtnClassName } from "@/components/layout/header-chrome-layout";
 import { SCREEN_ROOT_CLASS } from "@/components/layout/shell-integration";
 import { useCookieConsent } from "@/lib/cookie-consent-context";
+import { useFocusTrap } from "@/lib/use-focus-trap";
+import { useInertHostSiblings } from "@/lib/use-inert";
 import { SITE_MENU_ITEMS } from "@/lib/site-nav";
 import styles from "./NavMenu.module.css";
 
 export function NavMenu() {
   const menuId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRootRef = useRef<HTMLDivElement>(null);
+  const menuPanelRef = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const [portalHost, setPortalHost] = useState<HTMLElement | null>(null);
   const { openPreferences } = useCookieConsent();
+
+  useFocusTrap(menuPanelRef, open);
+  useInertHostSiblings(portalHost, menuRootRef, open);
 
   useEffect(() => {
     const host = buttonRef.current?.closest(`.${SCREEN_ROOT_CLASS}`);
@@ -40,8 +47,14 @@ export function NavMenu() {
   }, [open]);
 
   const menuPanel = open ? (
-    <div className={styles.root}>
-      <nav id={menuId} className={styles.panel} aria-label="Menu główne">
+    <div
+      ref={menuRootRef}
+      className={styles.root}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu główne"
+    >
+      <nav id={menuId} ref={menuPanelRef} className={styles.panel} aria-label="Menu główne">
         <div className={styles.head}>
           <Logo href="/" size="sm" />
           <button

@@ -27,6 +27,7 @@ import { getPatients } from "@/lib/patient-storage";
 import { useActivePatient } from "@/lib/use-active-patient";
 import { phoneAppRootClassName, phoneModalOpenClassName } from "@/components/layout/phone-frame-layout";
 import { APP_PHONE_ID } from "@/components/layout/shell-integration";
+import { useInert } from "@/lib/use-inert";
 import type { PatientOnboardingInput } from "@/lib/types";
 
 const PatientAddSheet = dynamic(
@@ -61,8 +62,11 @@ export function CartOverlayProvider({ children }: { children: ReactNode }) {
   const [pendingProduct, setPendingProduct] = useState<AddProductInput | null>(null);
   const pendingOnResultRef = useRef<((result: AddToCartResult) => void) | null>(null);
   const standaloneAddCallbackRef = useRef<((patientId: string) => void) | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const overlayOpen = pickerOpen || addPatientOpen || editPatientId != null;
+
+  useInert(contentRef, overlayOpen);
 
   useEffect(() => {
     const phone = document.getElementById(APP_PHONE_ID);
@@ -211,7 +215,7 @@ export function CartOverlayProvider({ children }: { children: ReactNode }) {
   return (
     <CartOverlayContext.Provider value={value}>
       <div className={phoneAppRootClassName}>
-        {children}
+        <div ref={contentRef}>{children}</div>
         <PatientAddSheet
           open={addPatientOpen}
           variant="additional"

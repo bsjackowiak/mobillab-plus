@@ -6,6 +6,7 @@ import {
   fieldHintSuccessClassName,
   fieldInputClassName,
   fieldLabelClassName,
+  formErrorAlertProps,
 } from "@/components/ui/form-field-layout";
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & {
@@ -35,7 +36,11 @@ export function FormField({
         className={`${fieldInputClassName(Boolean(error))}${className ? ` ${className}` : ""}`}
         {...inputProps}
       />
-      {error && <span className={fieldErrorTextClassName}>{error}</span>}
+      {error && (
+        <span className={fieldErrorTextClassName} {...formErrorAlertProps}>
+          {error}
+        </span>
+      )}
       {hint && (
         <span className={`${fieldHintClassName}${hintSuccess ? ` ${fieldHintSuccessClassName}` : ""}`}>
           {hint}
