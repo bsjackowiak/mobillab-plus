@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import {
   createContext,
   useCallback,
@@ -24,12 +25,22 @@ import { canRemovePatientById, removePatientFully } from "@/lib/patient-actions"
 import { createAdditionalPatient, updatePatientProfile } from "@/lib/patient-onboarding";
 import { getPatients } from "@/lib/patient-storage";
 import { useActivePatient } from "@/lib/use-active-patient";
-import { PatientAddSheet } from "@/components/ui/PatientAddSheet";
-import { PatientEditSheet } from "@/components/ui/PatientEditSheet";
-import { PatientPickerSheet } from "@/components/ui/PatientPickerSheet";
 import { phoneAppRootClassName, phoneModalOpenClassName } from "@/components/layout/phone-frame-layout";
 import { APP_PHONE_ID } from "@/components/layout/shell-integration";
 import type { PatientOnboardingInput } from "@/lib/types";
+
+const PatientAddSheet = dynamic(
+  () => import("@/components/ui/PatientAddSheet").then((m) => ({ default: m.PatientAddSheet })),
+  { ssr: false },
+);
+const PatientEditSheet = dynamic(
+  () => import("@/components/ui/PatientEditSheet").then((m) => ({ default: m.PatientEditSheet })),
+  { ssr: false },
+);
+const PatientPickerSheet = dynamic(
+  () => import("@/components/ui/PatientPickerSheet").then((m) => ({ default: m.PatientPickerSheet })),
+  { ssr: false },
+);
 
 type RequestAddOptions = {
   onResult?: (result: AddToCartResult) => void;
