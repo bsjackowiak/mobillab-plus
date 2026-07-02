@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useId, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { heroSubClassName, heroTitleCheckoutClassName } from "@/components/ui/page-hero-layout";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 import styles from "./AppFullscreen.module.css";
 
 type AppFullscreenProps = {
@@ -24,6 +25,9 @@ export function AppFullscreen({
   wide = false,
 }: AppFullscreenProps) {
   const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(panelRef, open);
 
   useEffect(() => {
     if (!open) return;
@@ -56,7 +60,13 @@ export function AppFullscreen({
         tabIndex={-1}
       />
 
-      <div className={panelClassName} role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <div
+        ref={panelRef}
+        className={panelClassName}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+      >
         <header className={styles.header}>
           <h2 id={titleId} className={styles.titleHeader}>
             {title}

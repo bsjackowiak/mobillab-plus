@@ -13,10 +13,17 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
   return (
     <CookieConsentProvider>
       <SessionHydrator />
+      <a href="#main-content" className={`sr-only ${styles.skipLink}`}>
+        Przejdź do treści
+      </a>
       <div className={styles.appShell}>
         <SiteTopBar />
         <div className={styles.phoneWrap}>
-          <div className={`${styles.phone} ${APP_MAIN_CLASS}`} id={APP_PHONE_ID}>
+          <div
+            className={`${styles.phone} ${APP_MAIN_CLASS}`}
+            id={APP_PHONE_ID}
+            tabIndex={-1}
+          >
             <CartOverlayProvider>{children}</CartOverlayProvider>
             <CookieConsentRoot />
           </div>

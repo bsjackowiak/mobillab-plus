@@ -18,7 +18,7 @@ export function CheckoutPaymentNotice({ config, demoAcknowledged, onDemoAckChang
           ? "Przelewy24"
           : "bramki płatności";
     return (
-      <div className={`${styles.notice} ${styles.noticeLive}`} role="status">
+      <div className={`${styles.notice} ${styles.noticeLive}`} role="status" aria-live="polite">
         <strong>Płatność online ({providerLabel})</strong>
         <p>
           Po kliknięciu „Zapłać” przekierujemy Cię do bezpiecznej bramki {providerLabel}. Dostępne
@@ -30,7 +30,7 @@ export function CheckoutPaymentNotice({ config, demoAcknowledged, onDemoAckChang
 
   if (config.mode === "live" && !config.liveReady) {
     return (
-      <div className={`${styles.notice} ${styles.noticeError}`} role="alert">
+      <div className={`${styles.notice} ${styles.noticeError}`} role="alert" aria-live="assertive">
         <strong>Płatności niedostępne</strong>
         <p>
           Tryb produkcyjny jest włączony, ale brakuje konfiguracji PSP. Skontaktuj się z
@@ -41,7 +41,7 @@ export function CheckoutPaymentNotice({ config, demoAcknowledged, onDemoAckChang
   }
 
   return (
-    <div className={`${styles.notice} ${styles.noticeDemo}`} role="status">
+    <div className={`${styles.notice} ${styles.noticeDemo}`} role="status" aria-live="polite">
       <strong>Tryb demonstracyjny</strong>
       <p>
         To zamówienie nie pobierze realnej opłaty. Numer zamówienia i e-mail potwierdzający są

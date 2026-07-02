@@ -232,10 +232,14 @@ function KoszykPageContent() {
       <h2 className={heroTitleCheckoutClassName}>Koszyk</h2>
       <p className={`hero-sub ${heroSubAfterProgressClassName}`}>{items.length} {items.length === 1 ? "pozycja" : "pozycje"}</p>
 
-      {toast && <p className={searchToastClassName}>{toast}</p>}
+      {toast && (
+        <p className={searchToastClassName} role="status" aria-live="polite">
+          {toast}
+        </p>
+      )}
 
       {(focusAssign || assignment.unassigned.length > 0) && (
-        <p className={cartAssignBannerClassName} role="status">
+        <p className={cartAssignBannerClassName} role="status" aria-live="polite">
           {assignment.unassigned.length}{" "}
           {assignment.unassigned.length === 1 ? "pozycja wymaga" : "pozycje wymagają"} przypisania do
           osoby — wybierz z listy poniżej.

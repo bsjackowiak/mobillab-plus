@@ -33,7 +33,9 @@ export function MobileShell({
         showBack={showBack}
       />
       <CartAddNotice />
-      <div className={bodyClassName}>{children}</div>
+      <main id="main-content" className={bodyClassName} tabIndex={-1}>
+        {children}
+      </main>
       {stickyFooter && <div className={styles.stickyCta}>{stickyFooter}</div>}
     </div>
   );

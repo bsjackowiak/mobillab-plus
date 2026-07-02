@@ -321,7 +321,7 @@ export default function CheckoutPage() {
         onDemoAckChange={setDemoAcknowledged}
       />
       {payError && (
-        <p className={checkoutPayErrorClassName} role="alert">
+        <p className={checkoutPayErrorClassName} role="alert" aria-live="assertive">
           {payError}
         </p>
       )}
