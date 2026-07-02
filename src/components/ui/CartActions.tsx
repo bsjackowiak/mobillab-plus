@@ -1,5 +1,8 @@
 "use client";
 
+import { btnPrimaryClassName, btnSecondaryClassName } from "@/components/ui/app-button-layout";
+import styles from "./CartActions.module.css";
+
 type Props = {
   onAdd: () => void;
   onOpenCart?: () => void;
@@ -20,19 +23,19 @@ export function CartActions({
   cartTotal = null,
 }: Props) {
   return (
-    <div className="cart-actions">
-      <button type="button" className="btn-secondary" onClick={onAdd} disabled={disabled}>
+    <div className={styles.actions}>
+      <button type="button" className={btnSecondaryClassName} onClick={onAdd} disabled={disabled}>
         {addLabel}
       </button>
       {cartCount > 0 && onOpenCart && (
-        <button type="button" className="btn-primary" onClick={onOpenCart}>
+        <button type="button" className={btnPrimaryClassName} onClick={onOpenCart}>
           {cartTotal != null
             ? `Koszyk (${cartCount}) · ${cartTotal} zł`
             : `Koszyk (${cartCount})`}
         </button>
       )}
       {priceLabel && cartCount === 0 && (
-        <p className="cart-actions-hint">{priceLabel}</p>
+        <p className={styles.hint}>{priceLabel}</p>
       )}
     </div>
   );

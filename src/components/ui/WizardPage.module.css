@@ -1,0 +1,89 @@
+.progressDots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  display: block;
+}
+
+.dotActive {
+  background: var(--accent);
+  width: 24px;
+  border-radius: 4px;
+}
+
+.note {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(52, 199, 89, 0.1);
+  color: #1d6b38;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.resultHeadline {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.resultCard {
+  margin-bottom: 16px;
+}
+
+.resultWhy {
+  margin-bottom: 8px;
+}
+
+.question {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 16px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.option:hover {
+  border-color: var(--accent);
+}
+
+.optionSelected {
+  border-color: var(--accent);
+  background: #f0f7ff;
+}
+
+.stickyFooterStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

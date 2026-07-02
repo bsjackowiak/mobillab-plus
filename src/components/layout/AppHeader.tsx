@@ -1,34 +1,45 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Logo } from "@/components/Logo";
+import { BackButton } from "@/components/layout/BackButton";
+import { HeaderActions } from "@/components/layout/HeaderActions";
+import { NavMenu } from "@/components/layout/NavMenu";
+import { Logo } from "@/components/brand/Logo";
+import { APP_HEADER_CLASS } from "@/components/layout/shell-integration";
+import styles from "./AppHeader.module.css";
 
-export function AppHeader({ showBack = false }: { showBack?: boolean }) {
-  const router = useRouter();
+type AppHeaderProps = {
+  variant: "home" | "inner";
+  backFallback?: string;
+  showBack?: boolean;
+};
 
-  if (showBack) {
+export function AppHeader({ variant, backFallback = "/", showBack = true }: AppHeaderProps) {
+  if (variant === "home") {
     return (
-      <header className="mb-5">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          aria-label="Wróć"
-          className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:text-foreground"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
+      <header className={`${styles.header} ${styles.headerHome} ${APP_HEADER_CLASS}`}>
+        <div className={styles.headerLeft}>
+          <div className={styles.navMenuMobile}>
+            <NavMenu />
+          </div>
+          <Logo href="/" size="md" />
+        </div>
+        <HeaderActions />
       </header>
     );
   }
 
   return (
-    <header className="mb-7 flex items-center justify-between">
-      <Logo />
-      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-border text-[14px] text-muted">
-        A
+    <header className={`${styles.header} ${styles.headerInner} ${APP_HEADER_CLASS}`}>
+      <div className={styles.headerLeft}>
+        {showBack ? <BackButton fallback={backFallback} compact /> : null}
+        <div className={styles.navMenuMobile}>
+          <NavMenu />
+        </div>
       </div>
+      <div className={styles.headerLogoWrap}>
+        <Logo href="/" size="sm" />
+      </div>
+      <HeaderActions />
     </header>
   );
 }

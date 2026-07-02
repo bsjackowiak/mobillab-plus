@@ -1,0 +1,60 @@
+.detail {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .detail {
+    max-width: 72ch;
+  }
+}
+
+.badge {
+  display: inline-block;
+  background: var(--brand-blue-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  margin-right: 8px;
+}
+
+.priceBig {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 8px 0 4px;
+}
+
+.priceNote {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+}
+
+.metaRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metaItem {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+}
+
+.metaItem strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.metaItem span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}

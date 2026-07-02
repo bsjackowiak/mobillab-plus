@@ -1,0 +1,129 @@
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  flex-shrink: 0;
+  justify-content: flex-end;
+}
+
+.actionsGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actionsCart {
+  padding-left: 6px;
+  margin-left: 2px;
+  border-left: 1px solid var(--border);
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.iconBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.iconBtn:active {
+  transform: scale(0.96);
+}
+
+a.iconBtn {
+  text-decoration: none;
+}
+
+.cartBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.cartBadgeEmpty {
+  width: 44px;
+  padding: 0;
+  color: var(--text);
+}
+
+.cartBadge:active {
+  transform: scale(0.96);
+}
+
+.cartBadgeCount {
+  min-width: 1ch;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.backBtnCompact {
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: border-color 0.15s, color 0.15s, transform 0.1s;
+}
+
+.backBtnCompact:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.backBtnCompact:active {
+  transform: scale(0.96);
+}
+
+@media (min-width: 1024px) {
+  :global(.lf-site-topbar) .actions {
+    flex: none;
+    justify-self: end;
+  }
+}

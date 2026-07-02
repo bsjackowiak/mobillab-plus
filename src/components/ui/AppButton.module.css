@@ -1,0 +1,80 @@
+.secondary {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.secondary:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondaryMt {
+  margin-top: 12px;
+}
+
+.primary {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 18px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.primary:hover {
+  background: var(--accent-hover);
+}
+
+.primaryMt {
+  margin-top: 20px;
+}
+
+.warm {
+  width: 100%;
+  background: var(--brand-orange);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 18px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.warm:hover {
+  background: var(--brand-orange-hover);
+}
+
+.warm:active {
+  transform: scale(0.99);
+}
+
+.warmMt {
+  margin-top: 10px;
+}
+
+.blockLink {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}

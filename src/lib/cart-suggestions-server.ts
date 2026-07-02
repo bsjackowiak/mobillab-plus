@@ -1,4 +1,6 @@
 import { getCatalogItemBySlug, searchCatalog } from "./catalog";
+import { primaryCategoryLabel } from "./catalog-categories";
+import { catalogCartKey, getProductKey, packageCartKey } from "./cart";
 import { getPackageById } from "./packages";
 import type { CartItem } from "./types";
 import type { CartSuggestion } from "./cart-suggestion-types";
@@ -64,8 +66,8 @@ const CATALOG_SEARCH_HINTS: { match: RegExp; queries: { q: string; reason: strin
   },
 ];
 
-function cartKeys(items: CartItem[]): Set<string> {
-  return new Set(items.map((i) => i.key));
+function cartProductKeys(items: CartItem[]): Set<string> {
+  return new Set(items.map((i) => getProductKey(i)));
 }
 
 function packageToSuggestion(
@@ -73,40 +75,54 @@ function packageToSuggestion(
   reason: string,
   inCart: Set<string>,
 ): CartSuggestion | null {
-  const key = `package:${packageId}`;
-  if (inCart.has(key)) return null;
+  const productKey = packageCartKey(packageId);
+  if (inCart.has(productKey)) return null;
 
   const pkg = getPackageById(packageId);
   if (!pkg) return null;
 
   return {
-    key,
+    key: productKey,
+    productKey,
     kind: "package",
     packageId,
     name: pkg.name,
     price: pkg.price,
     typ: "pakiet",
+    resultTime: pkg.resultTime,
+    testCount: pkg.testCount,
     reason,
   };
 }
 
 function catalogToSuggestion(
-  entry: { id: number; slug: string; nazwa: string; typ: "badanie" | "pakiet"; cena: number | null },
+  entry: {
+    id: number;
+    slug: string;
+    nazwa: string;
+    typ: "badanie" | "pakiet";
+    cena: number | null;
+    czas: string;
+    liczbaBadan: number;
+  },
   reason: string,
   inCart: Set<string>,
 ): CartSuggestion | null {
-  const key = `catalog:${entry.slug}`;
-  if (inCart.has(key)) return null;
+  const productKey = catalogCartKey(entry.slug);
+  if (inCart.has(productKey)) return null;
   if (entry.cena == null) return null;
 
   return {
-    key,
+    key: productKey,
+    productKey,
     kind: "catalog",
     catalogSlug: entry.slug,
     catalogId: entry.id,
     name: entry.nazwa,
     price: entry.cena,
     typ: entry.typ,
+    resultTime: entry.czas,
+    testCount: entry.liczbaBadan,
     reason,
   };
 }
@@ -140,7 +156,7 @@ function suggestionsFromCatalogCategory(items: CartItem[], inCart: Set<string>):
     const catalogItem = getCatalogItemBySlug(item.catalogSlug);
     if (!catalogItem?.kategorie) continue;
 
-    const categoryToken = catalogItem.kategorie.split(",")[0]?.trim();
+    const categoryToken = primaryCategoryLabel(catalogItem.kategorie);
     if (!categoryToken || categoryToken.length < 3) continue;
 
     const related = searchCatalog(categoryToken, 6).filter((r) => r.slug !== item.catalogSlug);
@@ -222,7 +238,7 @@ function isSuggestionRedundant(suggestion: CartSuggestion, items: CartItem[]): b
 export function getFilteredCartSuggestions(items: CartItem[], limit = 4): CartSuggestion[] {
   if (items.length === 0) return [];
 
-  const inCart = cartKeys(items);
+  const inCart = cartProductKeys(items);
   const merged: CartSuggestion[] = [];
   const seen = new Set<string>();
 

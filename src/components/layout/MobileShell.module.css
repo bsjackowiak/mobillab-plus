@@ -1,0 +1,72 @@
+.screen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--bg);
+  padding-top: 0;
+  position: relative;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 20px var(--app-padding-x) var(--app-padding-bottom-cta);
+  -webkit-overflow-scrolling: touch;
+}
+
+.bodyNoCta {
+  padding-bottom: var(--app-padding-bottom);
+}
+
+.stickyCta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px var(--app-padding-x) max(34px, env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--bg) 20%);
+  z-index: 20;
+}
+
+.stickyCta :global(.lf-btn-primary) {
+  box-shadow: 0 4px 16px rgba(15, 111, 255, 0.3);
+}
+
+.stickyCta :global(.lf-about-cta-btn) {
+  box-shadow: 0 10px 32px rgba(15, 111, 255, 0.4);
+}
+
+@media (min-width: 1024px) {
+  .screen {
+    flex: 1;
+    height: auto;
+    min-height: calc(100dvh - var(--site-topbar-h));
+  }
+
+  .screen :global(.lf-app-header) {
+    display: none;
+  }
+
+  .body {
+    flex: 1;
+    min-height: 0;
+    padding-left: var(--app-padding-x);
+    padding-right: var(--app-padding-x);
+  }
+
+  .stickyCta {
+    position: sticky;
+    bottom: 0;
+    left: auto;
+    right: auto;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    margin-top: auto;
+    padding: 16px var(--app-padding-x) 28px;
+    box-sizing: border-box;
+    background: linear-gradient(transparent, var(--bg) 24%);
+  }
+}

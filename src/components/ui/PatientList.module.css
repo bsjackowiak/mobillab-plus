@@ -1,0 +1,89 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.card {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cardActive {
+  border-color: rgba(15, 111, 255, 0.4);
+  box-shadow: 0 0 0 3px rgba(15, 111, 255, 0.1);
+}
+
+.cardMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.cardName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cardMeta {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.cardRemove {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 8px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.cardRemove:hover {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.08);
+  color: #ff3b30;
+}
+
+.identitySummary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.identitySummary strong {
+  font-size: 15px;
+}
+
+.identitySummary span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,37 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.p,
+.heading,
+.list {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.pPre {
+  white-space: pre-line;
+}
+
+.heading {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.list {
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.list li {
+  padding-left: 2px;
+}

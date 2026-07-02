@@ -1,0 +1,9 @@
+.toast {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: #e8f8ed;
+  color: #1b7a3d;
+  font-size: 13px;
+  font-weight: 600;
+}

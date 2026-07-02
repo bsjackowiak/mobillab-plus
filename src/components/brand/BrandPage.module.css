@@ -1,0 +1,103 @@
+.pageSub {
+  margin-top: 8px;
+}
+
+.section {
+  margin-top: 24px;
+}
+
+.sectionTitle {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.previewRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.swatches {
+  display: grid;
+  gap: 10px;
+}
+
+.swatch {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.swatchChip {
+  grid-row: span 3;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.swatch strong {
+  font-size: 14px;
+}
+
+.swatch span {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: ui-monospace, monospace;
+}
+
+.swatch small {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.logoGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.logoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.logoCardDark {
+  background: #1d1d1f;
+}
+
+.logoCard span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.logoCardDark span {
+  color: #a1a1a6;
+}
+
+.logoAsset {
+  max-width: 100%;
+  height: auto;
+  max-height: 48px;
+}

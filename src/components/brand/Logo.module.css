@@ -1,0 +1,79 @@
+.link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-brand), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.vertical {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.sm {
+  font-size: 17px;
+}
+
+.sm .plus {
+  font-size: 19px;
+}
+
+.md {
+  font-size: 20px;
+}
+
+.md .plus {
+  font-size: 22px;
+}
+
+.lg {
+  font-size: 28px;
+}
+
+.lg .plus {
+  font-size: 31px;
+}
+
+.word {
+  color: var(--brand-blue);
+}
+
+.plus {
+  color: var(--brand-orange);
+  font-weight: 800;
+  margin-left: 1px;
+}
+
+.vertical .plus {
+  margin-left: 0;
+}
+
+.mono .word,
+.mono .plus {
+  color: var(--text);
+}
+
+.white .word {
+  color: #ffffff;
+}
+
+.white .plus {
+  color: var(--brand-orange);
+}
+
+.black .word {
+  color: #000000;
+}
+
+.black .plus {
+  color: var(--brand-orange);
+}

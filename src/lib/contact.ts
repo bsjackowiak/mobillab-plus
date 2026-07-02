@@ -1,0 +1,4 @@
+export const SUPPORT_PHONE_DISPLAY = "509 332 779";
+export const SUPPORT_PHONE_E164 = "48509332779";
+export const SUPPORT_PHONE_TEL = `+${SUPPORT_PHONE_E164}`;
+export const SUPPORT_WHATSAPP_URL = `https://wa.me/${SUPPORT_PHONE_E164}`;

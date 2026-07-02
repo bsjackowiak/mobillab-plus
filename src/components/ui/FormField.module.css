@@ -1,0 +1,52 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 16px;
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.inputError {
+  border-color: #ff3b30;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.hintSuccess {
+  color: var(--green);
+}
+
+.errorText {
+  font-size: 12px;
+  color: #ff3b30;
+}
+
+@media (min-width: 64rem) {
+  :global(.lf-contact-form-grid) .group:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}

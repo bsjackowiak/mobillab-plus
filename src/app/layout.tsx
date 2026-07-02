@@ -13,7 +13,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: `${BRAND.name} — Badania laboratoryjne`,
-  description: "Zamów badania laboratoryjne prywatnie, bez skierowania. Mobile-first, w 60 sekund.",
+  description: "Zamów badania laboratoryjne prywatnie, bez skierowania — na telefonie i komputerze.",
   icons: {
     icon: "/brand/logo-mark.svg",
     apple: "/brand/logo-mark.svg",
@@ -23,7 +23,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: BRAND.colors.blue,
 };
 

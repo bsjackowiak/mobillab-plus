@@ -1,59 +1,83 @@
 "use client";
 
+import { btnWarmClassName } from "@/components/ui/app-button-layout";
+import { chipClassName } from "@/components/ui/chip-layout";
+import {
+  homeChipsHomeClassName,
+  homeFindClassName,
+  homeHeroArtClassName,
+  homeHeroClassName,
+  homeHeroCopyClassName,
+  homeHeroVisualClassName,
+  homeSectionLabelClassName,
+  homeShortcutsClassName,
+  homeTrustChipClassName,
+  homeTrustChipsClassName,
+} from "@/components/ui/home-page-layout";
+import { heroSubHomeClassName, heroTitleClassName } from "@/components/ui/page-hero-layout";
 import { useRouter } from "next/navigation";
+import { MedicalHeroIllustration } from "@/components/illustrations/MedicalHeroIllustration";
 import { MobileShell } from "@/components/layout/MobileShell";
+import { HomeRecommendedSection } from "@/components/ui/HomeRecommendedSection";
 import { SearchBox } from "@/components/ui/SearchBox";
-import { addPackageToCart } from "@/lib/checkout-flow";
+import { POPULAR_HOME_CHIPS } from "@/lib/recommended-home";
 
-const POPULAR = [
-  { label: "Pakiet kontrolny", id: "control" },
-  { label: "Tarczyca", id: "thyroid" },
-  { label: "Cholesterol", id: "cholesterol" },
-  { label: "Wit. D", id: "vitamin-d" },
-];
+const HOME_TRUST_CHIPS = ["Bez skierowania", "Wynik online", "Pobranie w domu"] as const;
 
 export default function HomePage() {
   const router = useRouter();
 
-  function handleReorder() {
-    addPackageToCart(router, "cholesterol", "checkout");
-  }
-
   return (
     <MobileShell home noCta>
-      <h2 className="hero-title">
-        Co chcesz
-        <br />
-        sprawdzić?
-      </h2>
-      <p className="hero-sub">Wyszukaj badanie lub opisz objawy</p>
+      <section className={homeHeroClassName} aria-label="Wprowadzenie">
+        <div className={homeHeroCopyClassName}>
+          <h2 className={heroTitleClassName}>
+            Co chcesz
+            <br />
+            sprawdzić?
+          </h2>
+          <p className={heroSubHomeClassName}>Wyszukaj badanie lub opisz objawy</p>
+        </div>
+        <div className={homeHeroVisualClassName}>
+          <MedicalHeroIllustration className={homeHeroArtClassName} />
+        </div>
+      </section>
 
-      <SearchBox />
+      <section className={homeFindClassName} aria-label="Wyszukiwanie i pomoc">
+        <SearchBox />
+        <button type="button" className={btnWarmClassName} onClick={() => router.push("/wizard")}>
+          Nie wiem — pomóż mi wybrać
+        </button>
+      </section>
 
-      <button type="button" className="btn-primary" onClick={() => router.push("/wizard")}>
-        Nie wiem — pomóż mi wybrać
-      </button>
-
-      <div className="chips">
-        {POPULAR.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className="chip"
-            onClick={() => router.push(`/produkt/${item.id}`)}
-          >
-            {item.label}
-          </button>
+      <div className={homeTrustChipsClassName} aria-label="Zalety Mobillab+">
+        {HOME_TRUST_CHIPS.map((label) => (
+          <span key={label} className={homeTrustChipClassName}>
+            {label}
+          </span>
         ))}
       </div>
 
-      <button type="button" className="reorder-card" onClick={handleReorder}>
-        <div className="reorder-icon">↻</div>
-        <div className="reorder-text">
-          <strong>Zamów ponownie</strong>
-          <span>Cholesterol + LDL · 89 zł · 1 tap</span>
+      <section className={homeShortcutsClassName} aria-label="Szybkie skróty">
+        <h3 className={homeSectionLabelClassName}>Szybkie skróty</h3>
+        <div className={homeChipsHomeClassName}>
+          {POPULAR_HOME_CHIPS.map((item) => (
+            <button
+              key={item.slug}
+              type="button"
+              className={chipClassName}
+              onClick={() => router.push(`/oferta/${item.slug}`)}
+            >
+              {item.label}
+            </button>
+          ))}
+          <button type="button" className={chipClassName} onClick={() => router.push("/kategorie")}>
+            Kategorie
+          </button>
         </div>
-      </button>
+      </section>
+
+      <HomeRecommendedSection />
     </MobileShell>
   );
 }

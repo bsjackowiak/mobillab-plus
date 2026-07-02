@@ -1,9 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BackButton } from "@/components/layout/BackButton";
-import { CartBadge } from "@/components/layout/CartBadge";
-import { HomeHeader } from "@/components/layout/HomeHeader";
+import { AppHeader } from "@/components/layout/AppHeader";
+import { SCREEN_ROOT_CLASS } from "@/components/layout/shell-integration";
+import { CartAddNotice } from "@/components/ui/CartAddNotice";
+import styles from "./MobileShell.module.css";
 
 export function MobileShell({
   children,
@@ -20,20 +21,20 @@ export function MobileShell({
   showBack?: boolean;
   backFallback?: string;
 }) {
-  const bodyClass = noCta || !stickyFooter ? "screen-body no-cta" : "screen-body";
+  const bodyClassName = [styles.body, noCta || !stickyFooter ? styles.bodyNoCta : ""]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className="screen">
-      <div className={bodyClass}>
-        {home ? <HomeHeader /> : showBack && (
-          <div className="screen-top-bar">
-            <BackButton fallback={backFallback} />
-            <CartBadge />
-          </div>
-        )}
-        {children}
-      </div>
-      {stickyFooter && <div className="sticky-cta">{stickyFooter}</div>}
+    <div className={`${styles.screen} ${SCREEN_ROOT_CLASS}`}>
+      <AppHeader
+        variant={home ? "home" : "inner"}
+        backFallback={backFallback}
+        showBack={showBack}
+      />
+      <CartAddNotice />
+      <div className={bodyClassName}>{children}</div>
+      {stickyFooter && <div className={styles.stickyCta}>{stickyFooter}</div>}
     </div>
   );
 }

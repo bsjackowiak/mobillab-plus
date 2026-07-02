@@ -1,0 +1,77 @@
+.root {
+  margin: 0 0 16px;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  text-align: center;
+}
+
+.dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.itemCurrent .dot {
+  border-color: var(--accent);
+  background: var(--brand-blue-soft);
+  color: var(--accent);
+}
+
+.itemDone .dot {
+  border-color: var(--green);
+  background: #e8f8ed;
+  color: #1b7a3d;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-secondary);
+}
+
+.itemCurrent .label {
+  color: var(--text);
+}
+
+.caption {
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.heroSubAfterProgress {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    transition: none;
+  }
+}

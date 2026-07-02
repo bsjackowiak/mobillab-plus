@@ -1,0 +1,83 @@
+.form {
+  margin-top: 0;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sectionLabel {
+  margin: 0 0 2px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.label {
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.formError {
+  margin: 4px 0 0;
+}
+
+.consent {
+  margin-top: 4px;
+}
+
+.identityModeToggle {
+  margin-top: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.identityModeToggle:active {
+  opacity: 0.75;
+}
+
+@media (min-width: 64rem) {
+  .formFull {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px 32px;
+    align-items: start;
+  }
+
+  .formFull .formError {
+    grid-column: 1 / -1;
+  }
+
+  .sectionLabel {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .consent {
+    margin-top: 8px;
+  }
+}

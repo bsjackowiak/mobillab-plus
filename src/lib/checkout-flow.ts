@@ -1,32 +1,80 @@
-import { addCartItem, getCartCount, getCartTotal } from "./cart";
-import { cartAssignmentsComplete, cartNeedsAssignment } from "./cart-patients";
+import { addProductForPatient } from "./add-to-cart";
+import { getCartCount, getCartTotal } from "./cart";
+import {
+  cartAssignmentsComplete,
+  cartNeedsAssignment,
+  getCartAssignmentStatus,
+  syncHomeVisitPersonCount,
+} from "./cart-patients";
 import { orderHasCollection } from "./collection";
 import { getOrder } from "./order-storage";
-import { getPackageById } from "./packages";
 import { hasRequiredPatients } from "./patient-storage";
-import type { CartItem } from "./types";
 
 type Router = { push: (href: string) => void };
 
-function goNextStep(router: Router) {
-  const order = getOrder();
+export type CheckoutNextStep =
+  | "assign"
+  | "dane"
+  | "pobranie"
+  | "checkout";
+
+export function getNextCheckoutStep(order = getOrder()): CheckoutNextStep {
+  syncHomeVisitPersonCount();
+  const assignment = getCartAssignmentStatus(order);
+
+  if (assignment.unassigned.length > 0) {
+    return "assign";
+  }
 
   if (!hasRequiredPatients(order)) {
-    router.push("/dane");
-    return;
+    return "dane";
   }
 
   if (!orderHasCollection(order)) {
-    router.push("/pobranie");
-    return;
+    return "pobranie";
   }
 
   if (cartNeedsAssignment(order) || !cartAssignmentsComplete(order)) {
-    router.push("/dane?phase=assign");
-    return;
+    return "assign";
   }
 
-  router.push("/checkout");
+  return "checkout";
+}
+
+export function checkoutStepHref(step: CheckoutNextStep): string {
+  switch (step) {
+    case "assign":
+      return "/koszyk?focus=assign";
+    case "dane":
+      return "/dane";
+    case "pobranie":
+      return "/pobranie";
+    case "checkout":
+      return "/checkout";
+  }
+}
+
+export function checkoutStepLabel(
+  step: CheckoutNextStep,
+  options?: { total?: number | null; includeTotal?: boolean },
+): string {
+  const totalSuffix =
+    options?.includeTotal && options.total != null ? ` · ${options.total} zł` : "";
+
+  switch (step) {
+    case "assign":
+      return "Przypisz badania do osób";
+    case "dane":
+      return "Uzupełnij dane kontaktowe";
+    case "pobranie":
+      return "Wybierz pobranie";
+    case "checkout":
+      return `Przejdź do płatności${totalSuffix}`;
+  }
+}
+
+function goNextStep(router: Router) {
+  router.push(checkoutStepHref(getNextCheckoutStep()));
 }
 
 export function addPackageToCart(
@@ -34,21 +82,10 @@ export function addPackageToCart(
   packageId: string,
   mode: "continue" | "checkout" = "continue",
 ): boolean {
-  const pkg = getPackageById(packageId);
-  if (!pkg) return false;
+  const result = addProductForPatient({ kind: "package", packageId });
 
-  const item: CartItem = {
-    key: `package:${packageId}`,
-    kind: "package",
-    packageId,
-    name: pkg.name,
-    price: pkg.price,
-  };
-
-  const added = addCartItem(item);
   if (mode === "checkout") goNextStep(router);
-  else router.push("/koszyk");
-  return added;
+  return result.status === "added";
 }
 
 export function addCatalogToCart(
@@ -62,20 +99,10 @@ export function addCatalogToCart(
   },
   mode: "continue" | "checkout" | "stay" = "continue",
 ): boolean {
-  const cartItem: CartItem = {
-    key: `catalog:${item.slug}`,
-    kind: "catalog",
-    catalogSlug: item.slug,
-    catalogId: item.id,
-    name: item.nazwa,
-    price: item.cena,
-    typ: item.typ,
-  };
+  const result = addProductForPatient({ kind: "catalog", ...item });
 
-  const added = addCartItem(cartItem);
   if (mode === "checkout") goNextStep(router);
-  else if (mode === "continue") router.push("/koszyk");
-  return added;
+  return result.status === "added";
 }
 
 export function goToCart(router: Router) {

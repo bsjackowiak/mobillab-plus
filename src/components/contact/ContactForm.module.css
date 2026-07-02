@@ -1,0 +1,156 @@
+.form {
+  gap: 14px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.lead {
+  margin: -4px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  color: #c41e14;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.hp {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236e6e73' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+.textarea {
+  min-height: 132px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.messageMeta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.charCount {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.optional {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.consent a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.submit {
+  margin-top: 4px;
+}
+
+.privacyNote {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 28px 12px 8px;
+}
+
+.successIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--green);
+  background: rgba(52, 199, 89, 0.12);
+}
+
+.successTitle {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.successText {
+  margin: 0;
+  max-width: 36ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.demoNote {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.resetBtn {
+  margin-top: 8px;
+  max-width: 280px;
+}
+
+@media (min-width: 1024px) {
+  .heading {
+    font-size: 22px;
+  }
+
+  .formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .submit {
+    max-width: 280px;
+  }
+}

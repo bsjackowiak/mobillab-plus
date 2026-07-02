@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
+import { logoClassName, logoLinkClassName, logoPlusClassName, logoWordClassName } from "./logo-layout";
 
 type LogoProps = {
   size?: "sm" | "md" | "lg";
@@ -18,17 +19,17 @@ export function Logo({
 }: LogoProps) {
   const content = (
     <span
-      className={`brand-logo brand-logo-${size} brand-logo-${variant} brand-logo-${theme} ${className}`.trim()}
+      className={logoClassName({ size, variant, theme, className })}
       aria-label={BRAND.name}
     >
-      <span className="brand-logo-word">Mobillab</span>
-      <span className="brand-logo-plus">+</span>
+      <span className={logoWordClassName}>Mobillab</span>
+      <span className={logoPlusClassName}>+</span>
     </span>
   );
 
   if (href) {
     return (
-      <Link href={href} className="brand-logo-link">
+      <Link href={href} className={logoLinkClassName}>
         {content}
       </Link>
     );

@@ -1,0 +1,73 @@
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.assignBanner {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-blue-soft);
+  border: 1px solid rgba(15, 111, 255, 0.14);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.assignBannerWarn {
+  background: rgba(255, 149, 0, 0.1);
+  border-color: rgba(255, 149, 0, 0.22);
+}
+
+.patientGroup {
+  margin-bottom: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.patientGroupHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--surface) 88%, var(--accent) 12%);
+  border-bottom: 1px solid var(--border);
+}
+
+.patientGroupTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.patientGroupMeta {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.suggestions {
+  margin-top: 24px;
+}
+
+.suggestionsTitle {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.suggestionsSub {
+  margin-top: 0;
+  margin-bottom: 12px;
+}

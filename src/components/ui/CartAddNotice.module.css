@@ -1,0 +1,44 @@
+@keyframes notice-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notice {
+  margin: 0;
+  padding: 10px 16px;
+  background: #e8f8ed;
+  color: #1b7a3d;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid rgba(27, 122, 61, 0.12);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  animation: notice-slide-in 0.25s ease-out;
+}
+
+.link {
+  color: #145c2e;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link:hover {
+  color: #0d3d1f;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notice {
+    animation: none;
+  }
+}

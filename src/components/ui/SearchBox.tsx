@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { addCatalogItem, catalogCartKey, getCartItems, isInCart } from "@/lib/cart";
+import { OfferCard } from "@/components/ui/OfferCard";
+import { primaryCategoryLabel } from "@/lib/catalog-categories";
+import { SEARCH_RESULTS_ROOT_CLASS } from "./search-integration";
+import { searchToastClassName } from "./search-box-layout";
+import styles from "./SearchBox.module.css";
+
+export { searchToastClassName } from "./search-box-layout";
 
 type SearchResult = {
   id: number;
@@ -12,27 +19,45 @@ type SearchResult = {
   cena: number | null;
   czas: string;
   kategorie: string;
+  liczbaBadan: number;
 };
+function shortCategory(kategorie: string): string {
+  const label = primaryCategoryLabel(kategorie);
+  if (!label) return "";
+  return label.length > 42 ? `${label.slice(0, 39)}…` : label;
+}
 
-export function SearchBox({ placeholder = "tarczyca, cholesterol, zmęczenie..." }: { placeholder?: string }) {
+export function SearchBox({
+  placeholder = "tarczyca, cholesterol, zmęczenie...",
+  initialQuery = "",
+  onQueryChange,
+  mode,
+}: {
+  placeholder?: string;
+  initialQuery?: string;
+  onQueryChange?: (query: string) => void;
+  mode?: "dropdown" | "filter";
+}) {
+  const isFilterMode = mode === "filter" || (mode !== "dropdown" && onQueryChange != null);
   const router = useRouter();
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [cartKeys, setCartKeys] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState("");
 
   useEffect(() => {
-    const refresh = () => setCartKeys(new Set(getCartItems().map((i) => i.key)));
-    refresh();
-    window.addEventListener("labflow-cart", refresh);
-    return () => window.removeEventListener("labflow-cart", refresh);
-  }, []);
+    setQuery(initialQuery);
+  }, [initialQuery]);
+
+  useEffect(() => {
+    onQueryChange?.(query);
+  }, [query, onQueryChange]);
 
   useEffect(() => {
     return () => {
@@ -41,6 +66,13 @@ export function SearchBox({ placeholder = "tarczyca, cholesterol, zmęczenie..."
   }, []);
 
   useEffect(() => {
+    if (isFilterMode) {
+      setResults([]);
+      setOpen(false);
+      setLoading(false);
+      return;
+    }
+
     if (query.trim().length < 2) {
       setResults([]);
       setOpen(false);
@@ -56,8 +88,9 @@ export function SearchBox({ placeholder = "tarczyca, cholesterol, zmęczenie..."
           signal: controller.signal,
         });
         if (!res.ok) throw new Error("search failed");
-        const data = (await res.json()) as { results: SearchResult[] };
+        const data = (await res.json()) as { results: SearchResult[]; total?: number };
         setResults(data.results);
+        setTotalResults(data.total ?? data.results.length);
         setOpen(data.results.length > 0);
         setActiveIndex(-1);
       } catch (err) {
@@ -74,9 +107,11 @@ export function SearchBox({ placeholder = "tarczyca, cholesterol, zmęczenie..."
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query]);
+  }, [query, isFilterMode]);
 
   useEffect(() => {
+    if (isFilterMode) return;
+
     function onPointerDown(e: MouseEvent) {
       if (!rootRef.current?.contains(e.target as Node)) {
         setOpen(false);
@@ -84,7 +119,7 @@ export function SearchBox({ placeholder = "tarczyca, cholesterol, zmęczenie..."
     }
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
-  }, []);
+  }, [isFilterMode]);
 
   function showToast(message: string) {
     setToast(message);
@@ -98,30 +133,24 @@ export function SearchBox({ placeholder = "tarczyca, cholesterol, zmęczenie..."
     router.push(`/oferta/${slug}`);
   }
 
-  function handleAdd(item: SearchResult, e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (item.cena == null) return;
-
-    const key = catalogCartKey(item.slug);
-    if (isInCart(key)) {
-      showToast("Już jest w koszyku");
-      return;
-    }
-
-    const added = addCatalogItem({
-      slug: item.slug,
-      id: item.id,
-      nazwa: item.nazwa,
-      cena: item.cena,
-      typ: item.typ,
-    });
-
-    showToast(added ? "Dodano do koszyka" : "Już jest w koszyku");
+  function goToAllResults() {
+    const q = query.trim();
+    if (q.length < 2) return;
+    setOpen(false);
+    router.push(`/badania?q=${encodeURIComponent(q)}`);
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (isFilterMode) return;
+
+    if (e.key === "Enter" && query.trim().length >= 2) {
+      if (!open || results.length === 0 || activeIndex < 0) {
+        e.preventDefault();
+        goToAllResults();
+        return;
+      }
+    }
+
     if (!open || results.length === 0) return;
 
     if (e.key === "ArrowDown") {
@@ -138,9 +167,12 @@ export function SearchBox({ placeholder = "tarczyca, cholesterol, zmęczenie..."
     }
   }
 
+  const showDropdown = !isFilterMode && (open || loading);
+  const wrapClassName = [styles.wrap, isFilterMode ? styles.filterWrap : ""].filter(Boolean).join(" ");
+
   return (
-    <div className="search-wrap" ref={rootRef}>
-      <label className="search-box">
+    <div className={wrapClassName} ref={rootRef}>
+      <label className={styles.field}>
         <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
           <circle cx="9" cy="9" r="6" />
           <path d="M14 14l4 4" />
@@ -149,78 +181,88 @@ export function SearchBox({ placeholder = "tarczyca, cholesterol, zmęczenie..."
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => results.length > 0 && setOpen(true)}
+          onFocus={() => !isFilterMode && results.length > 0 && setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
           aria-label="Wyszukaj badanie lub pakiet"
-          aria-expanded={open}
-          aria-controls={listId}
-          aria-autocomplete="list"
-          role="combobox"
+          aria-expanded={!isFilterMode && open}
+          aria-controls={!isFilterMode ? listId : undefined}
+          aria-autocomplete={isFilterMode ? "none" : "list"}
+          role={isFilterMode ? "searchbox" : "combobox"}
         />
+        {isFilterMode && query.trim().length > 0 && (
+          <button
+            type="button"
+            className={styles.clearBtn}
+            onClick={() => setQuery("")}
+            aria-label="Wyczyść wyszukiwanie"
+          >
+            ✕
+          </button>
+        )}
       </label>
 
-      {toast && <p className="search-toast">{toast}</p>}
+      {toast && <p className={searchToastClassName}>{toast}</p>}
 
-      {(open || loading) && (
-        <div className="search-results" id={listId} role="listbox">
-          {loading && <p className="search-results-empty">Szukam…</p>}
+      {showDropdown && (
+        <div
+          className={`${styles.results} ${SEARCH_RESULTS_ROOT_CLASS}`}
+          id={listId}
+          role="listbox"
+        >
+          {!loading && results.length > 0 && (
+            <p className={styles.resultsCount}>
+              {totalResults > results.length
+                ? `${results.length} z ${totalResults} wyników`
+                : `${results.length} ${results.length === 1 ? "wynik" : results.length < 5 ? "wyniki" : "wyników"}`}
+            </p>
+          )}
+          {loading && <p className={styles.resultsEmpty}>Szukam…</p>}
           {!loading && results.length === 0 && query.trim().length >= 2 && (
-            <p className="search-results-empty">Brak wyników dla „{query.trim()}”</p>
+            <p className={styles.resultsEmpty}>Brak wyników dla „{query.trim()}”</p>
           )}
           {!loading &&
             results.map((item, index) => {
-              const inCart = cartKeys.has(catalogCartKey(item.slug));
-              const canAdd = item.cena != null;
+              const category = shortCategory(item.kategorie);
 
               return (
                 <div
                   key={item.id}
                   role="option"
                   aria-selected={index === activeIndex}
-                  className={`search-result${index === activeIndex ? " search-result-active" : ""}`}
+                  className={styles.resultOption}
                   onMouseEnter={() => setActiveIndex(index)}
                 >
-                  <button type="button" className="search-result-body" onClick={() => goTo(item.slug)}>
-                    <div className="search-result-main">
-                      <span className={`search-result-type search-result-type-${item.typ}`}>
-                        {item.typ === "pakiet" ? "Pakiet" : "Badanie"}
-                      </span>
-                      <span className="search-result-name">{item.nazwa}</span>
-                      {item.kategorie && <span className="search-result-meta">{item.kategorie}</span>}
-                    </div>
-                    <div className="search-result-side">
-                      {item.cena != null ? <strong>{item.cena} zł</strong> : <span>—</span>}
-                      <span>{item.czas}</span>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    className={`search-result-add${inCart ? " search-result-add-done" : ""}`}
-                    onClick={(e) => handleAdd(item, e)}
-                    disabled={!canAdd || inCart}
-                    aria-label={
-                      inCart
-                        ? `${item.nazwa} — już w koszyku`
-                        : canAdd
-                          ? `Dodaj ${item.nazwa} do koszyka`
-                          : `${item.nazwa} — niedostępne online`
-                    }
-                  >
-                    {inCart ? (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
-                        <path d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                        <path d="M6 6h15l-1.5 9H8L6 6z" />
-                        <path d="M12 11v6M9 14h6" />
-                      </svg>
-                    )}
-                  </button>
+                  <OfferCard
+                    variant="search"
+                    highlighted={index === activeIndex}
+                    href={`/oferta/${item.slug}`}
+                    name={item.nazwa}
+                    typ={item.typ}
+                    price={item.cena}
+                    resultTime={item.czas}
+                    testCount={item.liczbaBadan}
+                    catalogSlug={item.slug}
+                    catalogId={item.id}
+                    category={category || undefined}
+                    onCartToast={showToast}
+                    onNavigate={() => {
+                      setOpen(false);
+                      setQuery("");
+                    }}
+                  />
                 </div>
               );
             })}
+          {!loading && totalResults > results.length && query.trim().length >= 2 && (
+            <Link
+              href={`/badania?q=${encodeURIComponent(query.trim())}`}
+              className={styles.resultsAll}
+              onClick={() => setOpen(false)}
+            >
+              Pokaż wszystkie wyniki ({totalResults})
+            </Link>
+          )}
         </div>
       )}
     </div>

@@ -1,0 +1,35 @@
+import { btnPrimaryClassName } from "./app-button-layout";
+import styles from "./AboutPage.module.css";
+
+export const ABOUT_CTA_BTN_CLASS = "lf-about-cta-btn";
+
+export const aboutHeroClassName = styles.hero;
+export const aboutHeroCopyClassName = styles.heroCopy;
+export const aboutHeroVisualClassName = styles.heroVisual;
+export const aboutPhotoWrapClassName = styles.photoWrap;
+export const aboutPhotoClassName = styles.photo;
+export const aboutPageClassName = styles.page;
+export const aboutLeadClassName = styles.lead;
+export const aboutMidGridClassName = styles.midGrid;
+export const aboutProfileClassName = styles.profile;
+export const aboutProfileBodyClassName = styles.profileBody;
+export const aboutProfileGreetingClassName = styles.profileGreeting;
+export const aboutNotesClassName = styles.notes;
+export const aboutWarmNoteClassName = styles.warmNote;
+export const aboutWarmNoteAccentClassName = `${styles.warmNote} ${styles.warmNoteAccent}`;
+export const aboutSectionsGridClassName = styles.sectionsGrid;
+export const aboutSectionClassName = styles.section;
+export const aboutSectionWideClassName = `${styles.section} ${styles.sectionWide}`;
+export const aboutSectionSubheadClassName = styles.sectionSubhead;
+export const aboutListClassName = styles.list;
+export const aboutListCheckClassName = `${styles.list} ${styles.listCheck}`;
+export const aboutEmphasisClassName = styles.emphasis;
+export const aboutHelpClassName = styles.help;
+export const aboutHelpCopyClassName = styles.helpCopy;
+export const aboutHelpActionsClassName = styles.helpActions;
+export const aboutHelpLinkClassName = styles.helpLink;
+export const aboutHelpLinkWaClassName = `${styles.helpLink} ${styles.helpLinkWa}`;
+export const aboutClosingBlockClassName = styles.closingBlock;
+export const aboutClosingClassName = styles.closing;
+export const aboutCtaNoteClassName = styles.ctaNote;
+export const aboutCtaBtnClassName = `${btnPrimaryClassName} ${styles.ctaBtn} ${ABOUT_CTA_BTN_CLASS}`;

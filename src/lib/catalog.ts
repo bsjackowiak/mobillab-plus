@@ -1,5 +1,13 @@
 import fs from "fs";
 import path from "path";
+import {
+  buildCatalogCategorySections,
+  buildFlatCategoryList,
+  primaryCategoryLabel,
+  type CatalogCategorySection,
+  type FlatCategoryEntry,
+} from "./catalog-categories";
+import { getCatalogTestCount } from "./offer-format";
 
 export type CatalogItem = {
   lp: number;
@@ -14,7 +22,7 @@ export type CatalogItem = {
   przygotowanie: string;
   opis: string;
   sklad_pakietu: string;
-  liczba_badan_w_pakiecie: string;
+  liczba_badan_w_pakiecie: string | number;
   url: string;
   cena_poznan_pln: number | null;
   cena_krakow_pln: number | null;
@@ -28,6 +36,7 @@ export type CatalogSearchResult = {
   cena: number | null;
   czas: string;
   kategorie: string;
+  liczbaBadan: number;
 };
 
 type CatalogFile = {
@@ -64,6 +73,10 @@ function loadCatalog(): CatalogFile {
   return catalogCache;
 }
 
+export function loadCatalogItems(): CatalogItem[] {
+  return loadCatalog().items;
+}
+
 function getSlugMap(): Map<string, CatalogItem> {
   if (slugMap) return slugMap;
   const catalog = loadCatalog();
@@ -83,6 +96,7 @@ function getSearchIndex(): IndexEntry[] {
     cena: getCatalogPrice(item),
     czas: item.czas_oczekiwania_na_wynik || "—",
     kategorie: item.kategorie || "",
+    liczbaBadan: getCatalogTestCount(item),
     nazwaNorm: normalize(item.nazwa),
     synonimyNorm: normalize(item.synonimy || ""),
     kategorieNorm: normalize(item.kategorie || ""),
@@ -100,16 +114,40 @@ export function getCatalogItemBySlug(slug: string): CatalogItem | undefined {
   return getSlugMap().get(slug);
 }
 
-export function searchCatalog(query: string, limit = 10): CatalogSearchResult[] {
+function toCatalogResult(entry: IndexEntry): CatalogSearchResult {
+  return {
+    id: entry.id,
+    slug: entry.slug,
+    nazwa: entry.nazwa,
+    typ: entry.typ,
+    cena: entry.cena,
+    czas: entry.czas,
+    kategorie: entry.kategorie,
+    liczbaBadan: entry.liczbaBadan,
+  };
+}
+
+function filterCatalog(query: string, typ?: "badanie" | "pakiet"): CatalogSearchResult[] {
+  let entries = getSearchIndex();
+  if (typ) entries = entries.filter((entry) => entry.typ === typ);
+
   const q = normalize(query);
-  if (q.length < 2) return [];
+  if (q.length < 2) {
+    return entries
+      .sort((a, b) => a.nazwa.localeCompare(b.nazwa, "pl"))
+      .map(toCatalogResult);
+  }
 
   const tokens = q.split(" ").filter((t) => t.length >= 2);
-  if (tokens.length === 0) return [];
+  if (tokens.length === 0) {
+    return entries
+      .sort((a, b) => a.nazwa.localeCompare(b.nazwa, "pl"))
+      .map(toCatalogResult);
+  }
 
   const scored: { entry: IndexEntry; score: number }[] = [];
 
-  for (const entry of getSearchIndex()) {
+  for (const entry of entries) {
     let score = 0;
     for (const token of tokens) {
       if (entry.nazwaNorm.includes(token)) score += 12;
@@ -124,16 +162,70 @@ export function searchCatalog(query: string, limit = 10): CatalogSearchResult[] 
   }
 
   scored.sort((a, b) => b.score - a.score || a.entry.nazwa.localeCompare(b.entry.nazwa, "pl"));
+  return scored.map(({ entry }) => toCatalogResult(entry));
+}
 
-  return scored.slice(0, limit).map(({ entry }) => ({
-    id: entry.id,
-    slug: entry.slug,
-    nazwa: entry.nazwa,
-    typ: entry.typ,
-    cena: entry.cena,
-    czas: entry.czas,
-    kategorie: entry.kategorie,
-  }));
+export function listCatalog({
+  query = "",
+  typ,
+  offset = 0,
+  limit = 20,
+}: {
+  query?: string;
+  typ?: "badanie" | "pakiet";
+  offset?: number;
+  limit?: number;
+}): { items: CatalogSearchResult[]; total: number; hasMore: boolean } {
+  const all = filterCatalog(query, typ);
+  const items = all.slice(offset, offset + limit);
+  return {
+    items,
+    total: all.length,
+    hasMore: offset + limit < all.length,
+  };
+}
+
+export function searchCatalog(query: string, limit = 10): CatalogSearchResult[] {
+  return listCatalog({ query, offset: 0, limit }).items;
+}
+
+export type { CatalogCategorySection, FlatCategoryEntry };
+export { primaryCategoryLabel };
+
+export function getCatalogCategorySections(): CatalogCategorySection[] {
+  return buildCatalogCategorySections(loadCatalogItems());
+}
+
+export function getFlatCategoryList(): FlatCategoryEntry[] {
+  return buildFlatCategoryList(loadCatalogItems());
+}
+
+export function getCatalogCategories(limit = 48): string[] {
+  return getCatalogCategorySections()
+    .slice(0, limit)
+    .map((section) => section.name);
+}
+
+export type CatalogCategoryGroup = {
+  letter: string;
+  categories: string[];
+};
+
+/** @deprecated Użyj getCatalogCategorySections() */
+export function getCatalogCategoriesGrouped(limit = 48): CatalogCategoryGroup[] {
+  const categories = getCatalogCategories(limit);
+  const byLetter = new Map<string, string[]>();
+
+  for (const category of categories) {
+    const letter = category.charAt(0).toLocaleUpperCase("pl") || "#";
+    const bucket = byLetter.get(letter) ?? [];
+    bucket.push(category);
+    byLetter.set(letter, bucket);
+  }
+
+  return [...byLetter.entries()]
+    .sort(([a], [b]) => a.localeCompare(b, "pl"))
+    .map(([letter, items]) => ({ letter, categories: items }));
 }
 
 export function toCatalogSummary(item: CatalogItem) {

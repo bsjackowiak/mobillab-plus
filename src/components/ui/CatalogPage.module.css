@@ -1,0 +1,119 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pageTitle {
+  margin: 0 0 6px;
+}
+
+.pageSub {
+  margin: 0;
+}
+
+.pageSearch {
+  margin-top: 16px;
+}
+
+.pageAsideExtra {
+  margin-top: 12px;
+}
+
+.section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  clear: both;
+}
+
+.sectionTitle {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filterLabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.filterChip {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.listStatus {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 16px 0;
+}
+
+.listCount {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.listEnd {
+  padding-bottom: 8px;
+}
+
+.sentinel {
+  height: 1px;
+}
+
+.featuredGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .pageTitle {
+    font-size: clamp(32px, 3.2vw, 42px);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    margin-bottom: 10px;
+  }
+
+  .pageSub {
+    font-size: 17px;
+    line-height: 1.5;
+    max-width: 48ch;
+    margin-bottom: 20px;
+  }
+
+  .page {
+    gap: 4px;
+  }
+
+  .featuredGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}

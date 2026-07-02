@@ -1,7 +1,11 @@
 import type { CartItem, OrderState } from "./types";
 import { getPackageById } from "./packages";
-
-const ORDER_KEY = "labflow-order";
+import {
+  getCachedOrder,
+  setCachedOrder,
+  archiveCurrentOrder,
+} from "./session-cache";
+import { scheduleSessionSync } from "./session-api";
 
 type LegacyOrder = OrderState & {
   packageId?: string;
@@ -23,6 +27,9 @@ function migrateOrder(raw: LegacyOrder | null): OrderState {
       homeAddress: raw.homeAddress,
       homeVisitPersonCount: raw.homeVisitPersonCount,
       location: raw.location,
+      invoiceType: raw.invoiceType,
+      invoicePersonal: raw.invoicePersonal,
+      invoiceCompany: raw.invoiceCompany,
       items: raw.items,
     };
   }
@@ -31,16 +38,20 @@ function migrateOrder(raw: LegacyOrder | null): OrderState {
 
   if (raw.packageId) {
     const pkg = getPackageById(raw.packageId);
+    const productKey = `package:${raw.packageId}`;
     items.push({
-      key: `package:${raw.packageId}`,
+      key: `unassigned:${productKey}`,
+      productKey,
       kind: "package",
       packageId: raw.packageId,
       name: pkg?.name ?? raw.catalogName ?? raw.packageId,
       price: pkg?.price ?? raw.catalogPrice ?? null,
     });
   } else if (raw.catalogSlug) {
+    const productKey = `catalog:${raw.catalogSlug}`;
     items.push({
-      key: `catalog:${raw.catalogSlug}`,
+      key: `unassigned:${productKey}`,
+      productKey,
       kind: "catalog",
       catalogSlug: raw.catalogSlug,
       catalogId: raw.catalogId,
@@ -66,25 +77,23 @@ export function saveOrder(order: Partial<OrderState>): void {
     ...order,
     items: order.items ?? current.items,
   };
-  sessionStorage.setItem(ORDER_KEY, JSON.stringify(merged));
+  setCachedOrder(merged);
+  scheduleSessionSync();
 }
 
 export function getOrder(): OrderState | null {
   if (typeof window === "undefined") return null;
-  const raw = sessionStorage.getItem(ORDER_KEY);
-  if (!raw) return null;
-  try {
-    return migrateOrder(JSON.parse(raw) as LegacyOrder);
-  } catch {
-    return null;
-  }
+  return migrateOrder(getCachedOrder());
 }
 
 export function clearOrder(): void {
   if (typeof window === "undefined") return;
-  sessionStorage.removeItem(ORDER_KEY);
+  setCachedOrder({ items: [] });
+  scheduleSessionSync();
 }
 
 export function generateOrderNumber(): string {
   return `ML+${Math.floor(10000 + Math.random() * 90000)}`;
 }
+
+export { archiveCurrentOrder };

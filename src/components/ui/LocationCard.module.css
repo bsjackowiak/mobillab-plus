@@ -1,0 +1,33 @@
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.pin {
+  width: 40px;
+  height: 40px;
+  background: var(--brand-blue-soft);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.card strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.card span {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}

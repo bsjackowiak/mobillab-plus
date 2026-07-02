@@ -1,23 +1,48 @@
 "use client";
 
+import { chipClassNames } from "@/components/ui/chip-layout";
+import { btnPrimaryClassName } from "@/components/ui/app-button-layout";
+import { heroSubClassName, heroTitleCheckoutClassName } from "@/components/ui/page-hero-layout";
+import {
+  collectionChipsClassName,
+  collectionFacilityListClassName,
+  collectionFacilityPickClassName,
+  collectionFacilityPickMainClassName,
+  collectionFacilityPickRatingClassName,
+  collectionHintClassName,
+  collectionModeClassName,
+  collectionModeIconClassName,
+  collectionModeMetaClassName,
+  collectionModesClassName,
+  collectionModeTitleClassName,
+  collectionSectionLabelClassName,
+} from "@/components/ui/collection-page-layout";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MobileShell } from "@/components/layout/MobileShell";
+import { CartTotalBreakdown } from "@/components/ui/CartTotalBreakdown";
+import { CheckoutProgress } from "@/components/ui/CheckoutProgress";
+import { heroSubAfterProgressClassName } from "@/components/ui/checkout-progress-layout";
+import { contentBoxClassName } from "@/components/ui/content-box-layout";
 import {
-  MAX_HOME_VISIT_PERSONS,
+  fieldErrorTextClassName,
+  fieldGroupClassName,
+  fieldInputClassName,
+} from "@/components/ui/form-field-layout";
+import { getCartTotal } from "@/lib/cart";
+import {
   TIME_SLOTS,
   formatCollectionLocation,
+  getCollectionFee,
   getHomeVisitFee,
 } from "@/lib/collection";
+import { checkoutStepHref, checkoutStepLabel, getNextCheckoutStep } from "@/lib/checkout-flow";
 import { orderHasItem } from "@/lib/order-helpers";
-import { cartAssignmentsComplete, cartNeedsAssignment } from "@/lib/cart-patients";
+import { syncHomeVisitPersonCount } from "@/lib/cart-patients";
 import { getOrder, saveOrder } from "@/lib/order-storage";
-import { hasRequiredPatients } from "@/lib/patient-storage";
-import { DEFAULT_FACILITY, FACILITIES, type Facility } from "@/lib/locations";
 import { getPatients } from "@/lib/patient-storage";
+import { DEFAULT_FACILITY, FACILITIES, type Facility } from "@/lib/locations";
 import type { CollectionType } from "@/lib/types";
-
-const PERSON_OPTIONS = Array.from({ length: MAX_HOME_VISIT_PERSONS }, (_, i) => i + 1);
 
 export default function PobraniePage() {
   const router = useRouter();
@@ -70,117 +95,100 @@ export default function PobraniePage() {
       location,
     });
 
-    const order = getOrder();
-    if (!hasRequiredPatients(order)) {
-      router.push("/dane");
-      return;
-    }
-    if (cartNeedsAssignment(order) || !cartAssignmentsComplete(order)) {
-      router.push("/dane?phase=assign");
-      return;
-    }
-    router.push("/checkout");
+    syncHomeVisitPersonCount();
+    router.push(checkoutStepHref(getNextCheckoutStep(getOrder())));
   }
 
   if (!ready) {
     return (
       <MobileShell showBack backFallback="/dane" noCta>
-        <p className="hero-sub">Ładowanie…</p>
+        <p className={heroSubClassName}>Ładowanie…</p>
       </MobileShell>
     );
   }
 
   const homeFee = getHomeVisitFee();
+  const itemsTotal = getCartTotal();
+  const grandTotalPreview =
+    itemsTotal != null ? itemsTotal + getCollectionFee(collectionType) : null;
+  const continueLabel =
+    grandTotalPreview != null
+      ? `Przejdź do płatności · ${grandTotalPreview} zł`
+      : checkoutStepLabel(getNextCheckoutStep(getOrder()));
 
   return (
     <MobileShell
       showBack
       backFallback="/dane"
       stickyFooter={
-        <button type="button" className="btn-primary" onClick={handleContinue}>
-          Dalej do płatności
+        <button type="button" className={btnPrimaryClassName} onClick={handleContinue}>
+          {continueLabel}
         </button>
       }
     >
-      <h2 className="hero-title-checkout">Gdzie pobrać krew?</h2>
-      <p className="hero-sub">Wybierz punkt lub pobranie w domu</p>
+      <CheckoutProgress current="pobranie" />
+      <h2 className={heroTitleCheckoutClassName}>Gdzie pobrać krew?</h2>
+      <p className={`${heroSubClassName} ${heroSubAfterProgressClassName}`}>Wybierz punkt lub pobranie w domu</p>
 
-      <div className="collection-modes">
+      <div className={collectionModesClassName}>
         <button
           type="button"
-          className={`collection-mode${collectionType === "facility" ? " selected" : ""}`}
+          className={collectionModeClassName(collectionType === "facility")}
           onClick={() => {
             setCollectionType("facility");
             setError("");
           }}
         >
-          <span className="collection-mode-icon">🏥</span>
-          <span className="collection-mode-title">Punkt pobrań</span>
-          <span className="collection-mode-meta">W cenie badania</span>
+          <span className={collectionModeIconClassName}>🏥</span>
+          <span className={collectionModeTitleClassName}>Punkt pobrań</span>
+          <span className={collectionModeMetaClassName}>W cenie badania</span>
         </button>
         <button
           type="button"
-          className={`collection-mode${collectionType === "home" ? " selected" : ""}`}
+          className={collectionModeClassName(collectionType === "home")}
           onClick={() => {
             setCollectionType("home");
             setError("");
           }}
         >
-          <span className="collection-mode-icon">🏠</span>
-          <span className="collection-mode-title">W domu</span>
-          <span className="collection-mode-meta">+{homeFee} zł</span>
+          <span className={collectionModeIconClassName}>🏠</span>
+          <span className={collectionModeTitleClassName}>W domu</span>
+          <span className={collectionModeMetaClassName}>+{homeFee} zł</span>
         </button>
       </div>
 
       {collectionType === "facility" ? (
         <>
-          <p className="section-label collection-section-label">Punkt pobrań</p>
-          <p className="hero-sub collection-hint">Przyjdź w godzinach otwarcia wybranego punktu</p>
-          <div className="facility-list">
+          <p className={collectionSectionLabelClassName}>Punkt pobrań</p>
+          <p className={`${heroSubClassName} ${collectionHintClassName}`}>Przyjdź w godzinach otwarcia wybranego punktu</p>
+          <div className={collectionFacilityListClassName}>
             {FACILITIES.map((f: Facility) => (
               <button
                 key={f.id}
                 type="button"
-                className={`facility-pick${facilityId === f.id ? " selected" : ""}`}
+                className={collectionFacilityPickClassName(facilityId === f.id)}
                 onClick={() => setFacilityId(f.id)}
               >
-                <div className="facility-pick-main">
+                <div className={collectionFacilityPickMainClassName}>
                   <strong>{f.name}</strong>
                   <span>
                     {f.address}, {f.city} · {f.distance}
                   </span>
                 </div>
-                <span className="facility-pick-rating">★ {f.rating}</span>
+                <span className={collectionFacilityPickRatingClassName}>★ {f.rating}</span>
               </button>
             ))}
           </div>
         </>
       ) : (
         <>
-          <p className="section-label collection-section-label">Dla ilu osób?</p>
-          <p className="hero-sub collection-hint">
-            Jedna wizyta, jeden dojazd — {homeFee} zł niezależnie od liczby osób
-          </p>
-          <div className="chips collection-chips">
-            {PERSON_OPTIONS.map((n) => (
-              <button
-                key={n}
-                type="button"
-                className={`chip${homeVisitPersonCount === n ? " chip-selected" : ""}`}
-                onClick={() => setHomeVisitPersonCount(n)}
-              >
-                {n === 1 ? "1 osoba" : `${n} osoby`}
-              </button>
-            ))}
-          </div>
-
-          <p className="section-label collection-section-label">Termin wizyty</p>
-          <div className="chips collection-chips">
+          <p className={collectionSectionLabelClassName}>Termin wizyty</p>
+          <div className={collectionChipsClassName}>
             {TIME_SLOTS.map((t) => (
               <button
                 key={t}
                 type="button"
-                className={`chip${slot === t ? " chip-selected" : ""}`}
+                className={chipClassNames(slot === t)}
                 onClick={() => setSlot(t)}
               >
                 {t}
@@ -188,11 +196,11 @@ export default function PobraniePage() {
             ))}
           </div>
 
-          <p className="section-label collection-section-label">Adres pobrania</p>
-          <div className="field-group">
+          <p className={collectionSectionLabelClassName}>Adres pobrania</p>
+          <div className={fieldGroupClassName}>
             <input
               id="homeAddress"
-              className={`field-input${error ? " field-error" : ""}`}
+              className={fieldInputClassName(Boolean(error))}
               value={homeAddress}
               onChange={(e) => {
                 setHomeAddress(e.target.value);
@@ -201,9 +209,9 @@ export default function PobraniePage() {
               placeholder="ul. Przykładowa 10/5, Warszawa"
               autoComplete="street-address"
             />
-            {error && <span className="field-error-text">{error}</span>}
+            {error && <span className={fieldErrorTextClassName}>{error}</span>}
           </div>
-          <div className="why-box">
+          <div className={contentBoxClassName}>
             <h3>Pobranie w domu</h3>
             <p>
               Pielęgniarka przyjedzie pod wskazany adres. Opłata za dojazd: <strong>{homeFee} zł</strong> —
@@ -213,6 +221,8 @@ export default function PobraniePage() {
           </div>
         </>
       )}
+
+      <CartTotalBreakdown itemsTotal={itemsTotal} collectionType={collectionType} />
     </MobileShell>
   );
 }
