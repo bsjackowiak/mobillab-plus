@@ -9,7 +9,6 @@ export const SESSION_PUT_MAX_BYTES = 256_000;
 
 const MAX_CART_ITEMS = 50;
 const MAX_PATIENTS = 20;
-const MAX_COMPLETED_ORDERS = 30;
 
 const shortText = z.string().trim().max(200);
 const mediumText = z.string().trim().max(500);
@@ -81,15 +80,10 @@ const patientSchema = z
     }
   });
 
-const completedOrderSchema = orderSchema.extend({
-  completedAt: z.string().trim().max(40),
-});
-
 export const sessionPutSchema = z.object({
   order: orderSchema.optional(),
   patients: z.array(patientSchema).max(MAX_PATIENTS).optional(),
   lastPatientId: z.string().trim().max(80).nullable().optional(),
-  completedOrders: z.array(completedOrderSchema).max(MAX_COMPLETED_ORDERS).optional(),
   updatedAt: z.string().trim().max(40).optional(),
 });
 
@@ -107,7 +101,7 @@ export function parseSessionPutPayload(body: unknown): SessionPutParseResult {
     order: parsed.data.order ?? { items: [] },
     patients: parsed.data.patients ?? [],
     lastPatientId: parsed.data.lastPatientId ?? null,
-    completedOrders: parsed.data.completedOrders ?? [],
+    completedOrders: [],
     updatedAt: new Date().toISOString(),
   });
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { toPublicOrderView } from "@/lib/order-registry-types";
 import { getOrderByToken } from "@/lib/server/order-registry";
+import { sensitiveJson } from "@/lib/server/sensitive-api-response";
 
 const TOKEN_RE = /^[a-f0-9-]{36}$/i;
 
@@ -18,5 +19,5 @@ export async function GET(
     return NextResponse.json({ error: "Nie znaleziono zamówienia" }, { status: 404 });
   }
 
-  return NextResponse.json(toPublicOrderView(record));
+  return sensitiveJson(toPublicOrderView(record));
 }

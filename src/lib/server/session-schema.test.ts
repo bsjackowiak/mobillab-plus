@@ -17,7 +17,6 @@ describe("parseSessionPutPayload", () => {
       order: { items: [] },
       patients: [],
       lastPatientId: null,
-      completedOrders: [],
     });
 
     expect(result.ok).toBe(true);
@@ -91,7 +90,6 @@ describe("parseSessionPutPayload", () => {
       },
       patients: [],
       lastPatientId: null,
-      completedOrders: [],
     });
 
     expect(result.ok).toBe(true);
@@ -117,6 +115,33 @@ describe("parseSessionPutPayload", () => {
     });
 
     expect(result.ok).toBe(false);
+  });
+
+  it("does not accept client completedOrders in put payload", () => {
+    const result = parseSessionPutPayload({
+      order: { items: [] },
+      patients: [],
+      completedOrders: [
+        {
+          items: [
+            {
+              key: "k1",
+              productKey: "p1",
+              kind: "catalog",
+              catalogSlug: "morfologia-krwi-pelna",
+              name: "Injected",
+              price: 1,
+            },
+          ],
+          completedAt: new Date().toISOString(),
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.completedOrders).toEqual([]);
+    }
   });
 
   it("rejects oversized cart", () => {
